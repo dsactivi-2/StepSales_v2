@@ -134,3 +134,44 @@ async def test_technical_fallback_swallows_backend_failure() -> None:
     state = CallState()
     await _report_technical_outcome(client, state, "failed", "x")  # type: ignore[arg-type]
     assert state.outcome_logged is False
+
+
+async def test_recap_followup_does_not_need_offer_id() -> None:
+    client = FakeClient({"send_followup": {"status": "queued"}})
+    agent, _ = _agent(client)
+    await agent.send_followup(None, email="a@example.com", followup_type="recap", summary="kurz")
+    assert client.calls == [
+        (
+            "send_followup",
+            {
+                "email": "a@example.com",
+                "followup_type": "recap",
+                "offer_id": None,
+                "summary": "kurz",
+                "agreed_next_contact": None,
+            },
+        )
+    ]
+
+
+async def test_offer_response_without_id_is_not_tracked() -> None:
+    client = FakeClient({"create_offer": {"final_price": 1490}})
+    agent, state = _agent(client)
+    await agent.create_offer(None, package_id="MULTI_M")
+    assert state.offer_ids == []
+
+
+async def test_schedule_second_call_forwards_args() -> None:
+    client = FakeClient({"schedule_second_call": {"termin_id": "T-1"}})
+    agent, _ = _agent(client)
+    await agent.schedule_second_call(
+        None, start_iso="2026-12-01T10:30:00+01:00", email="a@example.com"
+    )
+    tool, args = client.calls[0]
+    assert tool == "schedule_second_call"
+    assert args["start_iso"] == "2026-12-01T10:30:00+01:00"
+    assert args["email"] == "a@example.com"
+
+
+def test_payment_received_is_not_an_agent_tool() -> None:
+    assert not hasattr(SalesAgent, "mark_payment_received")

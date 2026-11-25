@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 from conftest import ROOM, make_metadata
 
@@ -13,6 +15,9 @@ def _env(monkeypatch: pytest.MonkeyPatch, **values: str) -> None:
         "N8N_TOOLS_WEBHOOK_URL",
         "N8N_TOOLS_WEBHOOK_SECRET",
         "STEPSALES_MODEL",
+        "STEPSALES_TOOLS_TIMEOUT_S",
+        "STEPSALES_MAX_CALL_SECONDS",
+        "STEPSALES_TEST_CALLS_ONLY",
         "LANGFUSE_PUBLIC_KEY",
         "LANGFUSE_SECRET_KEY",
         "LANGFUSE_BASE_URL",
@@ -56,6 +61,45 @@ def test_unknown_variant_fails_fast(monkeypatch) -> None:
         load_settings()
 
 
+def test_variant_is_case_insensitive(monkeypatch) -> None:
+    _env(monkeypatch, STEPSALES_VARIANT="GPTLIVE", **BASE)
+    assert load_settings().variant == "gptlive"
+
+
+def test_localhost_webhook_is_allowed(monkeypatch) -> None:
+    _env(
+        monkeypatch,
+        STEPSALES_VARIANT="gemini",
+        N8N_TOOLS_WEBHOOK_URL="http://localhost:5678/webhook/x",
+        N8N_TOOLS_WEBHOOK_SECRET="s",
+    )
+    assert load_settings().tools_webhook_url == "http://localhost:5678/webhook/x"
+
+
+def test_invalid_numeric_env_fails_fast(monkeypatch) -> None:
+    _env(monkeypatch, STEPSALES_VARIANT="gemini", STEPSALES_TOOLS_TIMEOUT_S="schnell", **BASE)
+    with pytest.raises(ConfigError, match="STEPSALES_TOOLS_TIMEOUT_S"):
+        load_settings()
+
+
+def test_langfuse_requires_all_three_keys(monkeypatch) -> None:
+    _env(
+        monkeypatch,
+        STEPSALES_VARIANT="gemini",
+        LANGFUSE_PUBLIC_KEY="pk",
+        LANGFUSE_SECRET_KEY="sk",
+        **BASE,
+    )
+    assert load_settings().langfuse_enabled is False
+    monkeypatch.setenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
+    assert load_settings().langfuse_enabled is True
+
+
+def test_non_false_value_keeps_test_calls_only_on(monkeypatch) -> None:
+    _env(monkeypatch, STEPSALES_VARIANT="gemini", STEPSALES_TEST_CALLS_ONLY="no", **BASE)
+    assert load_settings().test_calls_only is True
+
+
 def test_webhook_must_be_https(monkeypatch) -> None:
     _env(
         monkeypatch,
@@ -93,11 +137,15 @@ def test_valid_metadata_parses() -> None:
         make_metadata(phone_number="+0123"),
         make_metadata(call_type="kaltakquise"),
         make_metadata(lead={"ansprechpartner": "X"}),
+        make_metadata(lead={"firma": "   "}),
         make_metadata(call_id="other-room"),
         make_metadata(call_type="zweittermin"),
         make_metadata(test="false"),
         make_metadata(test=None),
         make_metadata(test=1),
+        make_metadata(phone_number="+123456"),
+        make_metadata(phone_number="+1234567890123456"),
+        make_metadata(phone_number="4930123456789"),
     ],
 )
 def test_invalid_metadata_never_dials(raw) -> None:
@@ -107,9 +155,35 @@ def test_invalid_metadata_never_dials(raw) -> None:
 
 def test_call_id_defaults_to_room() -> None:
     raw = make_metadata()
-    import json
-
     data = json.loads(raw)
     del data["call_id"]
     ctx = parse_metadata(json.dumps(data), room_name=ROOM)
     assert ctx.call_id == ROOM
+
+
+def test_missing_call_type_defaults_to_erstgespraech() -> None:
+    raw = make_metadata()
+    data = json.loads(raw)
+    del data["call_type"]
+    ctx = parse_metadata(json.dumps(data), room_name=ROOM)
+    assert ctx.call_type == "erstgespraech"
+
+
+def test_rueckruf_does_not_require_previous_summary() -> None:
+    ctx = parse_metadata(make_metadata(call_type="rueckruf"), room_name=ROOM)
+    assert ctx.call_type == "rueckruf"
+    assert ctx.previous_summary is None
+
+
+def test_zweittermin_accepts_previous_summary() -> None:
+    ctx = parse_metadata(
+        make_metadata(call_type="zweittermin", previous_summary="Will Paket M"),
+        room_name=ROOM,
+    )
+    assert ctx.previous_summary == "Will Paket M"
+
+
+@pytest.mark.parametrize("phone", ["+1234567", "+123456789012345", "  +4930123456789  "])
+def test_e164_bounds_and_whitespace_are_accepted(phone: str) -> None:
+    ctx = parse_metadata(make_metadata(phone_number=phone), room_name=ROOM)
+    assert ctx.phone_number == phone.strip()
