@@ -47,7 +47,7 @@ Alle Links sind Airtable-`multipleRecordLinks`; n8n schreibt pro Link genau eine
 ## Regeln für n8n (verbindlich)
 
 1. **Dedupe:** Vor dem Anlegen eines Leads nach `Telefon normalisiert` und `E-Mail normalisiert` suchen; Treffer → aktualisieren statt neu anlegen. Telefon immer in E.164 speichern.
-2. **Wählbar nur wenn:** `Wählbar` = an, `DNC` = aus, `Status` nicht in {paid, onboarding_pending, fulfilled, closed_lost, no_fit, dnc}, `Versuche` < `max_attempts`, `Nächster Versuch` ≤ jetzt, `Reserviert bis` leer oder abgelaufen, Telefon vorhanden.
+2. **Wählbar nur wenn:** `Wählbar` = an, `DNC` = aus, `Status` nicht in {paid, onboarding_pending, fulfilled, closed_lost, no_fit, dnc}, `Versuche` < `max_attempts`, `Nächster Versuch` leer oder ≤ jetzt, `Reserviert bis` leer oder abgelaufen, Telefon vorhanden.
 3. **Testbetrieb:** `Config.test_mode` = `true` → nur Leads mit `Testdaten` = an. Solange ein aktives Paket `Platzhalter` = an ist oder `Config.anzeigenummer` leer ist, keine Leads ohne `Testdaten`.
 4. **A/B:** `Leads.Agent` wird beim ersten Wählen gesetzt (Anteil `ab_split_gptlive_percent`) und danach nie geändert.
 5. **Status-Downgrade verboten:** Re-Qualifizierung setzt Status nur, wenn der aktuelle Status new/reached/qualified ist.
