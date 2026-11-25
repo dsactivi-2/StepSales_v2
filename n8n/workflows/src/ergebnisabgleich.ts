@@ -4,6 +4,7 @@ const BASE = { __rl: true, mode: 'id', value: 'appLXW1HK6fe213yO', cachedResultN
 const T_CONFIG = { __rl: true, mode: 'id', value: 'tblF7wK3OESuyDoFJ', cachedResultName: 'Config' };
 const T_LEADS = { __rl: true, mode: 'id', value: 'tblaT64e3mBSfULhx', cachedResultName: 'Leads' };
 const T_ANRUFE = { __rl: true, mode: 'id', value: 'tblOX9jhoT5mr49jh', cachedResultName: 'Anrufe' };
+const T_TERMINE = { __rl: true, mode: 'id', value: 'tbl4lisj3qqeg8fwV', cachedResultName: 'Termine' };
 const AT = { airtableTokenApi: newCredential('StepSales Airtable') };
 const ID_MATCH = { mappingMode: 'autoMapInputData', value: {}, matchingColumns: ['id'], schema: [{ id: 'id', displayName: 'id', required: false, defaultMatch: true, display: true, type: 'string', readOnly: true, removed: false }] };
 
@@ -106,7 +107,108 @@ const updateLeads = node({
   output: [{ json: { id: 'recTESTLEAD000001' } }]
 });
 
-const note = sticky('## Ergebnisabgleich\nAlle 10 Min.: Anrufe ohne Ergebnis, deren Start länger als max_call_seconds + 15 Min. her ist (Agent abgestürzt, Fallback fehlgeschlagen).\nAnruf → failed; Lead → Reservierung frei, Wählbar aus, Fehlernotiz. Kein automatischer Neuversuch (fail-closed).', [every10min, loadConfig, findStale], { color: 4 });
+const findMissed = node({
+  type: 'n8n-nodes-base.airtable',
+  version: 2.2,
+  config: {
+    name: 'Find missed appointments',
+    executeOnce: true,
+    parameters: {
+      resource: 'record', operation: 'search', authentication: 'airtableTokenApi', base: BASE, table: T_TERMINE, returnAll: true,
+      filterByFormula: "AND({Status}='scheduled', {Durchführung}='agent', IS_BEFORE({Start}, DATEADD(NOW(), -45, 'minutes')))",
+      options: { fields: ['Termin-ID', 'Start', 'Lead'] }
+    },
+    credentials: AT
+  },
+  output: [{ json: { id: 'recTERMIN00000001', 'Termin-ID': 'call-TEST-0001:schedule_second_call:4', Start: '2026-11-26T09:00:00.000Z', Lead: ['recTESTLEAD000001'] } }]
+});
+
+const findSecondCalls = node({
+  type: 'n8n-nodes-base.airtable',
+  version: 2.2,
+  config: {
+    name: 'Find second calls',
+    executeOnce: true,
+    alwaysOutputData: true,
+    parameters: {
+      resource: 'record', operation: 'search', authentication: 'airtableTokenApi', base: BASE, table: T_ANRUFE, returnAll: true,
+      filterByFormula: "AND({Typ}='zweittermin', IS_AFTER({Start}, DATEADD(NOW(), -3, 'days')))",
+      options: { fields: ['Lead', 'Start', 'Ergebnis'] }
+    },
+    credentials: AT
+  },
+  output: [{ json: {} }]
+});
+
+const buildMissed = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Build missed updates',
+    notes: 'Zweittermin 45 Min. nach Beginn: mit geführtem Gespräch → done; sonst rescheduled und Lead zur Prüfung sperren.',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      jsCode: `const flat = (j) => Object.assign({ id: j.id }, j.fields || j);
+const calls = $('Find second calls').all().map((i) => flat(i.json)).filter((r) => r.id);
+return $('Find missed appointments').all().map((i) => flat(i.json)).filter((r) => r.id).map((t) => {
+  const lead = (t['Lead'] || [])[0];
+  const start = DateTime.fromISO(t['Start']);
+  const called = calls.some((c) => (c['Lead'] || [])[0] === lead && c['Start'] && DateTime.fromISO(c['Start']) >= start.minus({ minutes: 30 }) && !!c['Ergebnis'] && !['no_answer', 'voicemail', 'failed'].includes(c['Ergebnis']));
+  return { json: { id: t.id, 'Status': called ? 'done' : 'rescheduled' } };
+});`
+    }
+  },
+  output: [{ json: { id: 'recTERMIN00000001', Status: 'rescheduled' } }]
+});
+
+const updateMissed = node({
+  type: 'n8n-nodes-base.airtable',
+  version: 2.2,
+  config: {
+    name: 'Mark appointments rescheduled',
+    parameters: { resource: 'record', operation: 'update', authentication: 'airtableTokenApi', base: BASE, table: T_TERMINE, columns: ID_MATCH, options: { typecast: true } },
+    credentials: AT
+  },
+  output: [{ json: { id: 'recTERMIN00000001' } }]
+});
+
+const buildMissedLeads = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Build missed lead updates',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      jsCode: `const seen = new Set();
+const out = [];
+const missed = new Set($('Build missed updates').all().filter((i) => i.json['Status'] === 'rescheduled').map((i) => i.json.id));
+$('Find missed appointments').all().forEach((i) => {
+  const r = Object.assign({ id: i.json.id }, i.json.fields || i.json);
+  if (!missed.has(r.id)) return;
+  const lead = Array.isArray(r['Lead']) ? r['Lead'][0] : null;
+  if (!lead || seen.has(lead)) return;
+  seen.add(lead);
+  const when = r['Start'] ? DateTime.fromISO(r['Start']).setZone('Europe/Berlin').toFormat('dd.MM.yyyy HH:mm') : '?';
+  out.push({ json: { id: lead, 'Wählbar': false, 'Fehlernotiz': 'Zweittermin am ' + when + ' nicht gewählt – neu vereinbaren' } });
+});
+return out;`
+    }
+  },
+  output: [{ json: { id: 'recTESTLEAD000001', Wählbar: false, Fehlernotiz: 'Zweittermin verpasst' } }]
+});
+
+const updateMissedLeads = node({
+  type: 'n8n-nodes-base.airtable',
+  version: 2.2,
+  config: {
+    name: 'Lock leads with missed appointment',
+    parameters: { resource: 'record', operation: 'update', authentication: 'airtableTokenApi', base: BASE, table: T_LEADS, columns: ID_MATCH, options: { typecast: true } },
+    credentials: AT
+  },
+  output: [{ json: { id: 'recTESTLEAD000001' } }]
+});
+
+const note = sticky('## Ergebnisabgleich\nAlle 10 Min.: Anrufe ohne Ergebnis, deren Start länger als max_call_seconds + 15 Min. her ist (Agent abgestürzt, Fallback fehlgeschlagen).\nAnruf → failed; Lead → Reservierung frei, Wählbar aus, Fehlernotiz. Kein automatischer Neuversuch (fail-closed).\nZweittermine (Durchführung agent), 45 Min. nach Beginn noch scheduled: Gespräch geführt → done, sonst rescheduled + Lead gesperrt.', [every10min, loadConfig, findStale], { color: 4 });
 
 export default workflow('stepsales-ergebnisabgleich', 'StepSales – Ergebnisabgleich')
   .add(every10min)
@@ -116,5 +218,8 @@ export default workflow('stepsales-ergebnisabgleich', 'StepSales – Ergebnisabg
   .to(updateCalls)
   .to(buildLeads)
   .to(updateLeads)
+  .add(every10min)
+  .to(findMissed.to(findSecondCalls.to(buildMissed.to(updateMissed.to(buildMissedLeads.to(updateMissedLeads))))))
   .add(note)
-  .group('Abgleich', [buildCalls, updateCalls, buildLeads, updateLeads], { description: 'Hängende Anrufe auf failed, Leads zur Prüfung sperren.' });
+  .group('Abgleich', [buildCalls, updateCalls, buildLeads, updateLeads], { description: 'Hängende Anrufe auf failed, Leads zur Prüfung sperren.' })
+  .group('Verpasste Zweittermine', [findMissed, findSecondCalls, buildMissed, updateMissed, buildMissedLeads, updateMissedLeads], { description: 'Zweittermine 45 Min. nach Beginn: Gespräch → done, sonst rescheduled + Lead sperren.' });

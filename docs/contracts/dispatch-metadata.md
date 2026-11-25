@@ -47,6 +47,7 @@ Workflow „StepSales – Dispatcher“ (`24V2NkLhWgBrSgWW`), Quelltext `n8n/wor
 
 - `call_id` = Raumname `call-<Lead-ID ohne rec>-<Zeit+Zufall>`; ein Datensatz in **Anrufe** wird vor dem Dispatch angelegt.
 - `call_type`: fälliger Zweittermin (`Termine`, Durchführung `agent`, Start −30/+5 Min.) → `zweittermin`; `Nächster Schritt = callback_agreed` → `rueckruf`; sonst `erstgespraech`.
-- `previous_summary` (nur `zweittermin`): Termin-Thema + Zusammenfassung des Erstgesprächs; fehlt beides, ein fester Hinweistext.
+- `previous_summary` (nur `zweittermin`): Termin-Thema + Zusammenfassung des Erstgesprächs. Fehlt beides, bricht der Dispatcher ab (fail-closed → Fehler-Stopp); es wird kein Platzhalter gesendet.
+- Verpasste Zweittermine (45 Min. nach Beginn noch `scheduled`): der Ergebnisabgleich setzt sie auf `done`, wenn ein Zweittermin-Gespräch stattfand, sonst auf `rescheduled` und sperrt den Lead.
 - `test` = `Leads.Testdaten`.
 - Dispatch: `POST <livekit_http_url>/twirp/livekit.AgentDispatchService/CreateDispatch` mit `agent_name` = `Leads.Agent`, Token HS256, 5 Min. gültig, Grant `roomCreate` + `roomAdmin` für genau diesen Raum.

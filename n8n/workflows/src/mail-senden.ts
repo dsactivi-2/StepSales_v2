@@ -60,7 +60,7 @@ const findExisting = node({
       resource: 'record', operation: 'search', authentication: 'airtableTokenApi',
       base: BASE, table: T_FU, returnAll: false, limit: 1,
       filterByFormula: expr("{FU-ID}='{{ String($('Start').first().json.fu_id || '').replace(/[^A-Za-z0-9_:.-]/g, '') }}'"),
-      options: { fields: ['FU-ID', 'Status'] }
+      options: { fields: ['FU-ID', 'Status', 'Geplant für'] }
     },
     credentials: { airtableTokenApi: newCredential('StepSales Airtable') }
   },
@@ -120,6 +120,9 @@ const block = (code, message) => out('block', {
 if (!record['FU-ID']) return block('fu_id_missing', 'FU-ID fehlt');
 if (existing && existing['Status'] === 'sent') {
   return out('done', { _response: { ok: true, data: { fu_id: record['FU-ID'], status: 'sent', duplicate: true } } });
+}
+if (existing && existing['Status'] === 'planned' && existing['Geplant für'] && DateTime.fromISO(existing['Geplant für']) > DateTime.now().minus({ minutes: 5 })) {
+  return out('done', { _response: { ok: true, data: { fu_id: record['FU-ID'], status: 'sending', duplicate: true } } });
 }
 if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return block('invalid_email', 'E-Mail-Adresse ungültig');
 if (lead['DNC'] === true) return block('lead_dnc', 'Lead steht auf DNC');
@@ -186,14 +189,14 @@ const sendGmail = node({
     onError: 'continueErrorOutput',
     parameters: {
       resource: 'message', operation: 'send', authentication: 'oAuth2',
-      sendTo: expr('{{ $json["Empfänger"] }}'),
-      subject: expr('{{ $json._subject }}'),
+      sendTo: expr("{{ $('Render mail').first().json['Empfänger'] }}"),
+      subject: expr("{{ $('Render mail').first().json._subject }}"),
       emailType: 'text',
-      message: expr('{{ $json._body }}'),
+      message: expr("{{ $('Render mail').first().json._body }}"),
       options: {
         appendAttribution: false,
-        senderName: expr('{{ $json._sender_name }}'),
-        bccList: expr('{{ $json._bcc }}')
+        senderName: expr("{{ $('Render mail').first().json._sender_name }}"),
+        bccList: expr("{{ $('Render mail').first().json._bcc }}")
       }
     },
     credentials: { gmailOAuth2: newCredential('StepSales Gmail') }
@@ -208,6 +211,41 @@ const fuColumns = {
   schema: [{ id: 'FU-ID', displayName: 'FU-ID', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: true, removed: false }]
 };
 const IGNORE = '_action,_response,_subject,_body,_sender_name,_bcc';
+
+const prepareClaim = node({
+  type: 'n8n-nodes-base.code',
+  version: 2,
+  config: {
+    name: 'Prepare claim',
+    notes: 'Vor dem Versand als planned speichern: eine Wiederholung mit derselben FU-ID innerhalb von 5 Min. sendet nicht erneut.',
+    parameters: {
+      mode: 'runOnceForAllItems',
+      jsCode: `const r = $('Render mail').first().json;
+const keep = ['FU-ID', 'Stufe', 'Empfänger', 'Lead', 'Angebot', 'Vorlage', 'Testdaten'];
+const out = {};
+keep.forEach((k) => { if (r[k] !== undefined) out[k] = r[k]; });
+out['Status'] = 'planned';
+out['Geplant für'] = new Date().toISOString();
+return [{ json: out }];`
+    }
+  },
+  output: [{ json: { 'FU-ID': 'call-TEST-0001:send_followup:3', Status: 'planned' } }]
+});
+
+const claimFollowup = node({
+  type: 'n8n-nodes-base.airtable',
+  version: 2.2,
+  config: {
+    name: 'Claim follow-up',
+    parameters: {
+      resource: 'record', operation: 'upsert', authentication: 'airtableTokenApi',
+      base: BASE, table: T_FU, columns: fuColumns,
+      options: { typecast: true }
+    },
+    credentials: { airtableTokenApi: newCredential('StepSales Airtable') }
+  },
+  output: [{ json: { id: 'recFU000000000001' } }]
+});
 
 const saveSent = node({
   type: 'n8n-nodes-base.code',
@@ -338,7 +376,7 @@ export default workflow('stepsales-mail-senden', 'StepSales – Mail senden')
   .to(getLead)
   .to(renderMail)
   .to(routeAction
-    .onCase(0, sendGmail.to(saveSent.to(upsertSent.to(resultSent))))
+    .onCase(0, prepareClaim.to(claimFollowup.to(sendGmail.to(saveSent.to(upsertSent.to(resultSent))))))
     .onCase(1, upsertBlocked.to(resultBlocked))
     .onCase(2, resultDone))
   .add(sendGmail.onError(prepareFailed.to(upsertFailed.to(resultFailed))))

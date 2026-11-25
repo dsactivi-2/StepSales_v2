@@ -563,11 +563,13 @@ if (!start.isValid) return reject('start_invalid', 'Startzeit ungültig (ISO 860
 const now = DateTime.now().setZone(tz);
 if (start < now.plus({ minutes: 30 })) return reject('start_too_soon', 'Termin muss mindestens 30 Minuten in der Zukunft liegen');
 if (start > now.plus({ days: 60 })) return reject('start_too_far', 'Termin höchstens 60 Tage im Voraus');
+const topic = String(a.topic || '').trim();
+if (!topic) return reject('topic_missing', 'Thema des Zweittermins fehlt (topic): Anliegen und Stand des Gesprächs angeben');
 const dur = Number(cfg.termin_dauer_min || 20);
 const end = start.plus({ minutes: dur });
 const days = String(cfg.call_days || '1,2,3,4,5').split(',').map((x) => Number(x.trim()));
 const hm = (s, d) => { const p = String(s || d).split(':'); return start.set({ hour: Number(p[0]), minute: Number(p[1] || 0), second: 0, millisecond: 0 }); };
-if (!days.includes(start.weekday) || start < hm(cfg.call_window_start, '09:00') || end > hm(cfg.call_window_end, '17:00')) {
+if (!days.includes(start.weekday) || start < hm(cfg.call_window_start, '09:00') || end > hm(cfg.call_window_end, '17:00') || start > hm(cfg.call_window_end, '17:00').minus({ minutes: 15 })) {
   return reject('outside_call_hours', 'Termin liegt außerhalb der Anrufzeiten (' + (cfg.call_window_start || '09:00') + '–' + (cfg.call_window_end || '17:00') + ', Tage ' + days.join(',') + ')');
 }
 const cal = cfg.kalender_dienst || '';
@@ -584,8 +586,8 @@ return [{ json: {
   durch: durch,
   email: email,
   title: 'StepSales Zweittermin: ' + (lead['Firma'] || ''),
-  description: 'Thema: ' + String(a.topic || '-') + '\\nAnsprechpartner: ' + (lead['Ansprechpartner'] || '-') + '\\nTelefon: ' + (lead['Telefon'] || '-') + '\\nDurchführung: ' + durch + '\\nTermin-ID: ' + req.key,
-  topic: String(a.topic || '').slice(0, 500),
+  description: 'Thema: ' + topic + '\\nAnsprechpartner: ' + (lead['Ansprechpartner'] || '-') + '\\nTelefon: ' + (lead['Telefon'] || '-') + '\\nDurchführung: ' + durch + '\\nTermin-ID: ' + req.key,
+  topic: topic.slice(0, 500),
   lead_id: lead.id,
   lead_status: lead['Status'] || 'new',
   testdaten: lead['Testdaten'] === true,

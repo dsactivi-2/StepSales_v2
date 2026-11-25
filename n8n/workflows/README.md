@@ -11,7 +11,7 @@ Die Quelltexte in `src/` sind n8n-Workflow-SDK-Code und die versionierte Fassung
 | StepSales – Agent-Tools | `RxfOpzUAF6C7yyoa` | Webhook `POST /webhook/stepsales-tools` (Header-Auth) | Alle Agent-Tools ([Vertrag](../../docs/contracts/tools-webhook.md)) | Europe/Berlin, Timeout 30 s, Error-Workflow: Fehler-Stopp* |
 | StepSales – Mail senden | `9uPWJkD0fqWwTC2R` | Sub-Workflow | Einziger Mail-Baustein: Vorlage, Platzhalter, Gmail, Follow-up-Datensatz | nur aufrufbar von Agent-Tools und FU-Sequenz |
 | StepSales – Dispatcher | `24V2NkLhWgBrSgWW` | Cron `*/2 8-17 * * 1-5` | Leads auswählen, reservieren, A/B, LiveKit `CreateDispatch` | Europe/Berlin, Timeout 90 s, Error-Workflow: Fehler-Stopp* |
-| StepSales – Ergebnisabgleich | `1uidBkcPnCccRKnb` | Cron `*/10 8-19 * * 1-5` | Anrufe ohne Ergebnis → `failed`, Lead zur Prüfung sperren | Europe/Berlin, Error-Workflow: Fehler-Stopp* |
+| StepSales – Ergebnisabgleich | `1uidBkcPnCccRKnb` | Cron `*/10 8-19 * * 1-5` | Anrufe ohne Ergebnis → `failed`, Lead zur Prüfung sperren; verpasste Zweittermine → `rescheduled` + Lead sperren (mit Gespräch → `done`) | Europe/Berlin, Error-Workflow: Fehler-Stopp* |
 | StepSales – Follow-up-Sequenz | `SfS9EqXM6nBJsj1v` | Cron `0 10 * * 1-5` | FU1–FU3 nach versendetem Angebot | Europe/Berlin, Timeout 600 s |
 | StepSales – Fehler-Stopp | `uXKc4PcGND3EImxI` | Error Trigger | `Config.dial_enabled = false`, Ursache in `Config.Beschreibung`, Alarm-Mail | – |
 
@@ -69,5 +69,8 @@ Die Cron-Zeiten begrenzen die Airtable-Aufrufe (Monatskontingent je Plan); die t
 | Dispatcher | Zweittermin + Neu-Lead + ungültige Nummer | Zweittermin zuerst (mit Gesprächsstand), ungültige Nummer übersprungen, A/B gesetzt |
 | Follow-up-Sequenz | drei Angebote | FU2 fällig, zu frisch → nichts, abgelaufen → FU2 übersprungen, FU3 |
 | Ergebnisabgleich | zwei hängende Anrufe, ein Lead | beide `failed`, Lead einmal gesperrt |
+| Agent-Tools | `schedule_second_call` ohne `topic` | `topic_missing` |
+| Mail senden | Wiederholung, FU-ID `planned` < 5 Min. | `status: sending`, kein zweiter Versand |
+| Ergebnisabgleich | Zweittermin ohne / mit Gespräch | `rescheduled` + Lead gesperrt / `done` |
 
 Noch nicht geprüft: echte Airtable-, Gmail-, Kalender- und LiveKit-Aufrufe (fehlende Credentials, Stufe 4).

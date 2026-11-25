@@ -307,7 +307,8 @@ return $('Reservation confirmed?').all().map((item) => {
   let previous = null;
   if (sel.call_type === 'zweittermin') {
     const first = sel.first_call_id ? firsts[sel.first_call_id] : '';
-    previous = [sel.termin_kontext ? 'Thema: ' + sel.termin_kontext : '', first ? 'Erstgespräch: ' + first : ''].filter(Boolean).join('\\n') || 'Zweittermin vereinbart; kein Gesprächsstand hinterlegt.';
+    previous = [sel.termin_kontext ? 'Thema: ' + sel.termin_kontext : '', first ? 'Erstgespräch: ' + first : ''].filter(Boolean).join('\\n');
+    if (!previous) throw new Error('Zweittermin für Lead ' + sel.lead_id + ' ohne Thema und ohne Erstgespräch – nicht gewählt (fail-closed)');
   }
   const meta = {
     lead_id: sel.lead_id,

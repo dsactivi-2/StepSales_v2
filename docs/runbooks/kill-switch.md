@@ -42,6 +42,8 @@ Erst wenn die Ursache behoben ist:
 | Fehler in Dispatcher, Ergebnisabgleich oder Agent-Tools | Fehler-Stopp: `dial_enabled = false` + Alarm-Mail (sobald als Error-Workflow verknüpft) |
 | Dispatch an LiveKit fehlgeschlagen | Lead gesperrt + Fehler-Stopp |
 | `livekit_api_key` fehlt | Dispatcher bricht ab → Fehler-Stopp |
+| Zweittermin ohne Thema und ohne Erstgespräch | Dispatcher bricht ab → Fehler-Stopp (Lead bleibt bis Reservierungsende gesperrt) |
+| Zweittermin 45 Min. nach Beginn nicht geführt | Termin `rescheduled`, Lead Wählbar aus + Fehlernotiz |
 | Außerhalb `call_days` / `call_window_*` oder an `sperrtage` | Gate startet nichts (kein Stopp, nur Pause) |
 | Testbetrieb (`test_mode` ≠ `false`, Platzhalter-Paket aktiv oder `anzeigenummer` leer) | nur Leads mit **Testdaten** = an |
 
