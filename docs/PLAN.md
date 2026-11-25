@@ -1,0 +1,99 @@
+# StepSales v2 – Bauplan
+
+Stand: 2026-11-25 · Status: **Entwurf, wartet auf Freigabe („bestätige“)**
+
+## Ziel
+
+Zwei deutschsprachige Outbound-Telesales-Voice-Agents auf LiveKit Cloud, die Multiposting-Pakete an Firmen mit frischen Stellenanzeigen verkaufen (Aufgabe: `docs/agent-pack/00–07`). Beide Agents haben dieselbe Aufgabe, dieselben Tools und denselben Lead-Pool; nur das Sprachmodell unterscheidet sich (A/B-Vergleich).
+
+| Agent | Modell | LiveKit-Agent-Name |
+| --- | --- | --- |
+| A | OpenAI `gpt-live-1` (Vollduplex) | `stepsales-gptlive` |
+| B | Google `gemini-3.8-live` | `stepsales-gemini` |
+
+## Entscheidungen (von Denis, 2026-11-25)
+
+| # | Thema | Entscheidung |
+| --- | --- | --- |
+| 1 | Gemini-Modell | `gemini-3.8-live` |
+| 2 | Datenspeicher | Airtable + n8n (`n8n.activi.io`) |
+| 3 | Leads | Firmen werden später generiert; Schema jetzt, Import später |
+| 4 | Telefonie | LiveKit SIP → FreeSWITCH/FusionPBX `fusion.activi.io` → sipgate |
+| 5 | Pakete | Leicht änderbar, ohne Code-Deploy |
+| 6 | Absender | Firma „StepSales“; Agent-Name von Claude; Berliner Festnetznummer folgt |
+| 7 | Zahlung | Stripe |
+| 8 | LiveKit | Neues Cloud-Projekt nur für StepSales |
+| 9 | Tracing | Langfuse, inkl. Transkripte |
+| 10 | Lead-Verteilung | Beide Agents aus demselben Pool (Zufallsaufteilung) |
+
+## Architektur
+
+```
+Airtable (Base "StepSales")  <──>  n8n.activi.io
+   Leads, Pakete, Config,             1 Dispatcher ──► LiveKit Dispatch + SIP ──► FusionPBX ──► sipgate ──► Kunde
+   Anrufe, Angebote,                  2 Agent-Tools-Webhook  ◄── Tool-Calls der Agents
+   Zahlungen, Follow-ups              3 Stripe-Webhook (paid → Post-Sale)
+                                      4 Follow-up-Sequenz (FU 1–3)
+                                      5 Ergebnisabgleich
+                                      6 Fehler-Stopp (Kill-Switch fail-closed)
+
+LiveKit Cloud (Projekt "StepSales")
+   ein Python-Codebase, zwei Agent-Namen → Modellwahl per Agent-Name
+   Langfuse-Tracing (OpenTelemetry)
+```
+
+### Pakete leicht änderbar (Entscheidung 5)
+
+- Tabelle `Pakete` in Airtable: `paket_id`, `name`, `leistungen` (Kurztext für den Agenten), `portale`, `laufzeit_tage`, `listenpreis_eur_netto`, `max_rabatt_prozent`, `empfehlen_wenn`, `aktiv`.
+- Der Agent lädt beim Gesprächsstart nur aktive Pakete über das Tool `get_packages` und nennt nichts, was dort nicht steht.
+- Endpreis und Rabattgrenze rechnet **n8n**, nie der Agent. Änderung in Airtable wirkt beim nächsten Anruf, ohne Deploy.
+
+### Agent-Tools (über einen n8n-Webhook, Auth per Secret-Header)
+
+| Tool | Zweck | Schreibt in |
+| --- | --- | --- |
+| `get_packages` | Aktive Pakete + Preise laden | – |
+| `qualify_lead` | Qualifizierung + Score | Leads |
+| `create_offer` | Angebot, Rabatt ≤ Paketgrenze, Preis serverseitig | Angebote |
+| `send_followup` | Recap/Angebot per Mail (E-Mail vorher bestätigt) | Follow-ups |
+| `schedule_second_call` | Zweittermin | Termine |
+| `send_payment_link` | Stripe-Checkout erzeugen + per Mail senden | Zahlungen |
+| `log_call_outcome` | Pflicht am Gesprächsende | Anrufe |
+| `end_call` | Auflegen | – |
+
+**Bewusst kein Agent-Tool:** `mark_payment_received`. Den Status „bezahlt“ setzt nur der Stripe-Webhook.
+
+### Gesprächs- und Sicherheitsregeln
+
+- Eröffnung nennt StepSales, den Grund des Anrufs und dass ein KI-Assistent spricht (EU AI Act Art. 50).
+- Eine Frage pro Turn, kurze Sätze, nie Rabatt als Einstieg, immer ein konkreter nächster Schritt (`docs/agent-pack/01, 07`).
+- Bei „kein Interesse“ / „nicht mehr anrufen“: höflich beenden, Lead auf DNC.
+- Harte Grenzen: max. Gesprächsdauer, Anrufzeiten Mo–Fr in Berliner Zeit, max. Versuche je Lead, Kill-Switch `dial_enabled` in Config.
+
+### Airtable-Base „StepSales“ (Entwurf)
+
+`Leads` · `Pakete` · `Anrufe` · `Angebote` · `Zahlungen` · `Follow-ups` · `Termine` · `Config`.
+Lead-Status aus `docs/agent-pack/05`: new → reached → qualified → proposal_pending → second_call_scheduled → negotiating → verbally_closed → payment_pending → paid → onboarding_pending → fulfilled · closed_lost · no_fit · dnc.
+
+## Stufen (jede nur nach „bestätige“)
+
+| Stufe | Inhalt | Freigabe-Kriterium |
+| --- | --- | --- |
+| 0 | Init-Commit (Docs, Plan) | Push-Zugriff steht |
+| 1 | Airtable-Base + Pakete-Platzhalter | Schema abgenommen |
+| 2 | Agent-Code (beide Modelle), lokale Tests + Text-Simulationen | Tests grün |
+| 3 | n8n-Workflows inaktiv anlegen, Tool-Webhook gegen Testdaten | Tool-Antworten korrekt |
+| 4 | Deploy LiveKit Cloud, SIP-Trunk, nur interne Testnummern | Testanrufe ok, Langfuse-Traces da |
+| 5 | Stripe Testmodus → Live | Zahlung end-to-end im Testmodus |
+| 6 | Pilot mit wenigen echten Leads | Ergebnisse geprüft |
+
+## Offene Punkte
+
+1. Mailversand: Absender-Adresse und Dienst (Gmail/Google Workspace, SMTP, Brevo …)?
+2. Kalender für Zweittermine (Google Calendar?) und wer führt den Zweittermin – Mensch oder Agent?
+3. Rechtsgrundlage Kaltanrufe (UWG §7, mutmaßliche Einwilligung) – von dir geklärt bzw. verantwortet?
+4. Langfuse: Cloud EU oder selbst gehostet (URL)?
+5. Modelle über LiveKit Inference (eine Rechnung, EU-Endpoint für GPT-Live) oder eigene OpenAI-/Google-Keys?
+6. Persona: Vorschlag „Lena Berger, StepSales“ für **beide** Agents, damit der A/B-Vergleich nur das Modell misst.
+7. LiveKit-Projekt „StepSales“ legst du im Dashboard an; ich brauche `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` als Session-Secrets.
+8. Paketinhalte (Portale, Laufzeit, Preise in EUR netto) – bis dahin Platzhalter, Agent ruft keine echten Leads an.
