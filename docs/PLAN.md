@@ -1,6 +1,6 @@
 # StepSales v2 – Bauplan
 
-Stand: 2026-11-25 · Status: **Entwurf, wartet auf Freigabe („bestätige“)**
+Stand: 2026-11-25 · Status: **Entscheidungen erfasst; Stufe 1 wartet auf „bestätige“**
 
 ## Ziel
 
@@ -25,6 +25,13 @@ Zwei deutschsprachige Outbound-Telesales-Voice-Agents auf LiveKit Cloud, die Mul
 | 8 | LiveKit | Neues Cloud-Projekt nur für StepSales |
 | 9 | Tracing | Langfuse, inkl. Transkripte |
 | 10 | Lead-Verteilung | Beide Agents aus demselben Pool (Zufallsaufteilung) |
+| 11 | Mail | Absender, Dienst und Texte leicht änder- und anpassbar ([ADR-0010](adr/0010-mail-und-kalender-konfigurierbar.md)) |
+| 12 | Zweittermin | Kalender und Durchführung (Mensch/Agent) konfigurierbar ([ADR-0010](adr/0010-mail-und-kalender-konfigurierbar.md)) |
+| 13 | Rechtsgrundlage Kaltanrufe (UWG §7) | Vom Owner geklärt (2026-11-25) |
+| 14 | Langfuse | Cloud EU (`cloud.langfuse.com`, AWS eu-west-1), Projekt „stepsales“ |
+| 15 | Modellzugang | LiveKit Inference |
+| 16 | Persona | „Lena Berger, StepSales“ für beide Agents |
+| 17 | LiveKit | Projekt `p_5dj6vv0ce47`, `wss://stepsalesv2-walghbs5.livekit.cloud` |
 
 ## Architektur
 
@@ -89,11 +96,8 @@ Lead-Status aus `docs/agent-pack/05`: new → reached → qualified → proposal
 
 ## Offene Punkte
 
-1. Mailversand: Absender-Adresse und Dienst (Gmail/Google Workspace, SMTP, Brevo …)?
-2. Kalender für Zweittermine (Google Calendar?) und wer führt den Zweittermin – Mensch oder Agent?
-3. Rechtsgrundlage Kaltanrufe (UWG §7, mutmaßliche Einwilligung) – von dir geklärt bzw. verantwortet?
-4. Langfuse: Cloud EU oder selbst gehostet (URL)?
-5. Modelle über LiveKit Inference (eine Rechnung, EU-Endpoint für GPT-Live) oder eigene OpenAI-/Google-Keys?
-6. Persona: Vorschlag „Lena Berger, StepSales“ für **beide** Agents, damit der A/B-Vergleich nur das Modell misst.
-7. LiveKit-Projekt „StepSales“ legst du im Dashboard an; ich brauche `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` als Session-Secrets.
-8. Paketinhalte (Portale, Laufzeit, Preise in EUR netto) – bis dahin Platzhalter, Agent ruft keine echten Leads an.
+1. Mail: Standard-Dienst und Absender-Adresse für den Start (austauschbar, ADR-0010) – Issue #1
+2. Kalender: Standard (z. B. Google Calendar) und Default Mensch/Agent – Issue #2
+3. Langfuse: Löschfrist und Zugriffsrechte für Transkripte – Issue #4
+4. Paketinhalte – Issue #8 (bis dahin Platzhalter, keine echten Anrufe)
+5. Berliner Rufnummer / sipgate-CLI – Issue #9
