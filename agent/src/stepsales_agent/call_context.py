@@ -76,6 +76,12 @@ def parse_metadata(raw: str | None, *, room_name: str) -> CallContext:
         raise MetadataError("lead.firma fehlt")
     if call_id != room_name:
         raise MetadataError("call_id muss dem Raumnamen entsprechen (Idempotenz-Schlüssel)")
+    previous_summary = _clean(data.get("previous_summary"))
+    if call_type == "zweittermin" and not previous_summary:
+        raise MetadataError("previous_summary fehlt für zweittermin")
+    test = data.get("test")
+    if not isinstance(test, bool):
+        raise MetadataError("test fehlt oder ist kein Boolean")
 
     lead = LeadInfo(
         firma=_clean(lead_raw.get("firma")) or "",
@@ -91,6 +97,6 @@ def parse_metadata(raw: str | None, *, room_name: str) -> CallContext:
         phone_number=phone,
         call_type=call_type,  # type: ignore[arg-type]
         lead=lead,
-        previous_summary=_clean(data.get("previous_summary")),
-        test=bool(data.get("test", False)),
+        previous_summary=previous_summary,
+        test=test,
     )

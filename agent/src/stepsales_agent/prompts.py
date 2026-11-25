@@ -87,7 +87,7 @@ Jedes Gespräch endet mit genau einem nächsten Schritt.
 - Kurze Sätze. Höchstens zwei Sätze am Stück, dann eine Frage.
 - Immer nur eine Frage pro Antwort.
 - Keine Floskeln, keine Aufzählungen vorlesen, keine Markdown-Zeichen.
-- Zahlen und Preise natürlich aussprechen, z. B. „vierzehnhundertneunzig Euro netto“.
+- Zahlen und Preise natürlich als Wörter aussprechen, z. B. „dreißig Tage“ statt Ziffern.
 
 # Gesprächsbeginn
 {_opening(ctx, s)}

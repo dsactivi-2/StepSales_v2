@@ -33,8 +33,8 @@ Der n8n-Dispatcher startet einen Anruf mit `CreateAgentDispatch` (LiveKit API):
 | call_type | nein | `erstgespraech` (Default) · `zweittermin` · `rueckruf` |
 | lead.firma | ja | |
 | lead.* übrige | nein | leer lassen statt raten |
-| previous_summary | bei `zweittermin` | aus `Termine.Kontext für Agent` |
-| test | ja | `true` für fiktive Leads/interne Nummern |
+| previous_summary | bei `zweittermin` Pflicht (sonst Abbruch) | aus `Termine.Kontext für Agent` |
+| test | ja, JSON-Boolean (kein String) | `true` für fiktive Leads/interne Nummern |
 
 **Fail-closed:** Fehlt ein Pflichtfeld oder ist es ungültig, beendet der Agent den Job ohne zu wählen.
 Solange `STEPSALES_TEST_CALLS_ONLY` nicht `false` ist, werden nur Aufträge mit `test: true` angerufen.

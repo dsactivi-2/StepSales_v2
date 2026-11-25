@@ -94,6 +94,10 @@ def test_valid_metadata_parses() -> None:
         make_metadata(call_type="kaltakquise"),
         make_metadata(lead={"ansprechpartner": "X"}),
         make_metadata(call_id="other-room"),
+        make_metadata(call_type="zweittermin"),
+        make_metadata(test="false"),
+        make_metadata(test=None),
+        make_metadata(test=1),
     ],
 )
 def test_invalid_metadata_never_dials(raw) -> None:

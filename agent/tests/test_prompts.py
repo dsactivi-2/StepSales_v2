@@ -53,6 +53,8 @@ def test_no_hardcoded_prices_or_package_contents(call_ctx) -> None:
     text = combined_instructions(call_ctx, make_settings(), NOW)
     assert not re.search(r"\b\d{3,4}\s*(€|Euro)", text)
     assert "MULTI_" not in text
+    # auch ausgeschriebene Beträge (gesprochene Form) dürfen nicht im Prompt stehen
+    assert not re.search(r"(hundert|tausend)\w*\s+Euro", text, re.IGNORECASE)
 
 
 def test_lead_context_and_date_included(call_ctx) -> None:

@@ -49,6 +49,13 @@ def _sip_outcome(exc: api.SipCallError) -> str:
     return "failed"
 
 
+def _technical_from_sip(exc: api.SipCallError) -> tuple[str, str]:
+    """Besetzt/abgelehnt ist kein technischer Fehler: als no_answer speichern (neuer Versuch)."""
+    sip_outcome = _sip_outcome(exc)
+    outcome = "failed" if sip_outcome == "failed" else "no_answer"
+    return outcome, f"SIP {exc.sip_status_code} {exc.sip_status} ({sip_outcome})"
+
+
 async def _report_technical_outcome(
     client: ToolsClient, state: CallState, outcome: str, reason: str
 ) -> None:
@@ -178,10 +185,8 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
                 timeout=60,
             )
         except api.SipCallError as exc:
-            technical.update(
-                outcome="no_answer" if _sip_outcome(exc) == "no_answer" else "failed",
-                reason=f"SIP {exc.sip_status_code} {exc.sip_status}",
-            )
+            outcome, reason = _technical_from_sip(exc)
+            technical.update(outcome=outcome, reason=reason)
             ctx.shutdown("call not answered")
             return
         except TimeoutError:

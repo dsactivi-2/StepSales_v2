@@ -42,5 +42,5 @@ Timeout Agent-Seite: `STEPSALES_TOOLS_TIMEOUT_S` (Default 8 s).
 | send_payment_link | offer_id, email | payment_ref, status | nur Angebot dieses Leads; Stripe Checkout; Lead `payment_pending` |
 | log_call_outcome | outcome, summary, next_step, objection_type, interest_level, callback_iso, confidence, technical | stored | genau ein Ergebnis je call_id; `dnc_requested` → `DNC`=an; `technical:true` = Code-Fallback |
 
-`outcome`-Werte = `Anrufe.Ergebnis` (airtable/schema.md). Technische Werte vom Code: `no_answer`, `voicemail`, `failed`.
+`outcome`-Werte = `Anrufe.Ergebnis` (airtable/schema.md). Technische Werte vom Code: `no_answer` (auch SIP 486 besetzt / 603 abgelehnt, Code im `summary`), `voicemail`, `failed`.
 Nie ein Agent-Tool: Zahlung als bezahlt markieren ([ADR-0006](../adr/0006-zahlungsstatus-nur-per-stripe-webhook.md)).

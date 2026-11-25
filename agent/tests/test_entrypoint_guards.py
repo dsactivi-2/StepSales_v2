@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 from types import SimpleNamespace
 
+import pytest
 from conftest import ROOM, make_metadata, make_settings
 
 from stepsales_agent.main import _run_call
@@ -49,3 +50,23 @@ async def test_missing_trunk_refused() -> None:
     await _run_call(ctx, settings)  # type: ignore[arg-type]
     assert ctx.shutdown_reasons == ["missing trunk"]
     assert ctx.sip_calls == 0
+
+
+@pytest.mark.parametrize(
+    ("code", "expected"),
+    [("486", "no_answer"), ("603", "no_answer"), ("480", "no_answer"), ("500", "failed")],
+)
+def test_busy_and_rejected_are_not_technical_failures(code: str, expected: str) -> None:
+    from livekit import api
+
+    from stepsales_agent.main import _technical_from_sip
+
+    exc = api.SipCallError(
+        "unavailable",
+        "sip error",
+        status=503,
+        metadata={"sip_status_code": code, "sip_status": "X"},
+    )
+    outcome, reason = _technical_from_sip(exc)
+    assert outcome == expected
+    assert code in reason
