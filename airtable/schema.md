@@ -1,7 +1,8 @@
 # Airtable-Base „StepSales“
 
 - **Base-ID:** `appLXW1HK6fe213yO` (Workspace `wsp776xCeBFbhigym` „Workspace“)
-- **Maschinenlesbar mit allen Feld-IDs:** [`schema.json`](schema.json) – n8n adressiert Felder per ID, nicht per Name.
+- **Maschinenlesbar mit allen Feld-IDs:** [`schema.json`](schema.json).
+- **Feldnamen sind Schnittstelle:** Die n8n-Airtable-Nodes lesen und schreiben Felder per **Name** (Formeln ebenso). Ein Feld umzubenennen erfordert eine Änderung der Workflows in `n8n/workflows/` ([ADR-0012](../docs/adr/0012-n8n-workflows-idempotenz-und-fail-closed.md)).
 - **Stand:** 2026-11-25 (Issue #10)
 - **Entscheidungen:** [ADR-0004](../docs/adr/0004-airtable-und-n8n-als-system-of-record.md), [ADR-0006](../docs/adr/0006-zahlungsstatus-nur-per-stripe-webhook.md), [ADR-0009](../docs/adr/0009-pakete-in-airtable.md), [ADR-0010](../docs/adr/0010-mail-und-kalender-konfigurierbar.md)
 
@@ -85,6 +86,10 @@ Alle Links sind Airtable-`multipleRecordLinks`; n8n schreibt pro Link genau eine
 | termin_dauer_min | 20 | |
 | angebot_gueltig_tage | 7 | |
 | fu_abstand_tage | 2,4,7 | FU1–FU3 nach Angebot |
+| livekit_api_key | *(neu, vom Owner anzulegen)* | API-Key-ID des LiveKit-Projekts; ohne sie wählt der Dispatcher nicht |
+| livekit_http_url | *(optional)* | Standard `https://stepsalesv2-walghbs5.livekit.cloud` |
+| sperrtage | *(optional)* | `YYYY-MM-DD,…` ohne Anrufe (z. B. Feiertage) |
+| alarm_email | *(optional)* | Empfänger der Fehler-Stopp-Mail; sonst `absender_adresse` |
 
 Werte `termin_dauer_min`, `angebot_gueltig_tage`, `fu_abstand_tage`, `max_call_seconds`, Anrufzeiten sind **Startannahmen** von Claude und jederzeit in Airtable änderbar.
 
@@ -97,4 +102,5 @@ Werte `termin_dauer_min`, `angebot_gueltig_tage`, `fu_abstand_tage`, `max_call_s
 ## Offen
 
 - Paketinhalte (#8), Anzeigenummer (#9), Mail-Signatur/Impressum, Löschfrist Transkripte (#4).
+- Feld für bisherige Kanäle/Portale des Kunden fehlt (`qualify_lead.current_channels` wird derzeit ignoriert).
 - Airtable-Token für n8n: Owner legt einen Personal Access Token mit Zugriff nur auf diese Base an und hinterlegt ihn als n8n-Credential (Stufe 3).

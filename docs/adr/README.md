@@ -15,3 +15,4 @@ Format: [Vorlage](template.md). Neue ADR = nächste freie Nummer. Akzeptieren da
 | 0009 | [Pakete in Airtable, zur Laufzeit geladen](0009-pakete-in-airtable.md) | Vorgeschlagen |
 | 0010 | [Mail und Kalender konfigurierbar statt fest verdrahtet](0010-mail-und-kalender-konfigurierbar.md) | Vorgeschlagen |
 | 0011 | [Anrufablauf, Dispatch-Vertrag und zwei Deployments](0011-anrufablauf-und-dispatch-vertrag.md) | Vorgeschlagen |
+| 0012 | [n8n-Workflows: Aufteilung, Idempotenz, fail-closed](0012-n8n-workflows-idempotenz-und-fail-closed.md) | Vorgeschlagen |
