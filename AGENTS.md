@@ -35,7 +35,7 @@ docs/runbooks/       Betrieb: Kill-Switch, Deploy, Rollback, Incidents
 .github/             Issue-/PR-Templates, CODEOWNERS
 agent/               (geplant, Stufe 2) Python-Code LiveKit Agents
 n8n/workflows/       (geplant, Stufe 3) exportierte Workflow-JSONs, ohne Credentials
-airtable/            (geplant, Stufe 1) Schema-Beschreibung der Base „StepSales“
+airtable/            Schema der Base „StepSales“ (schema.md + schema.json mit Feld-IDs)
 ```
 
 Neue Top-Level-Ordner nur mit ADR oder Freigabe im Issue.
