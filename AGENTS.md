@@ -33,7 +33,8 @@ docs/adr/            Architecture Decision Records (NNNN-titel.md)
 docs/agent-pack/     Fachliche Aufgabe
 docs/runbooks/       Betrieb: Kill-Switch, Deploy, Rollback, Incidents
 .github/             Issue-/PR-Templates, CODEOWNERS
-agent/               (geplant, Stufe 2) Python-Code LiveKit Agents
+agent/               Python-Code LiveKit Agents (beide Varianten, Tests)
+docs/contracts/      Schnittstellen n8n ↔ Agent (Dispatch-Metadaten, Tools-Webhook)
 n8n/workflows/       (geplant, Stufe 3) exportierte Workflow-JSONs, ohne Credentials
 airtable/            Schema der Base „StepSales“ (schema.md + schema.json mit Feld-IDs)
 ```
@@ -103,7 +104,19 @@ Code ohne Doku ist nicht fertig.
 
 ## 8. Befehle
 
-Noch kein Code. Sobald `agent/` existiert, stehen hier: Setup, Tests, Lint, lokaler Konsolen-Test, Deploy. Bis dahin: keine erfundenen Befehle.
+Alle Befehle im Ordner `agent/` (Python 3.12/3.13, [uv](https://docs.astral.sh/uv/)):
+
+| Zweck | Befehl |
+| --- | --- |
+| Setup | `uv sync` |
+| Unit-Tests (ohne Netz, jeder Commit) | `uv run pytest` |
+| Verhaltenstests mit echtem Modell (kostet Inference) | `set -a; . ../.env; set +a; uv run pytest -m live` |
+| Lint / Format | `uv run ruff check src tests` · `uv run ruff format src tests` |
+| Agent-Worker lokal (registriert sich bei LiveKit Cloud) | `STEPSALES_VARIANT=gemini uv run python -m stepsales_agent.main dev` |
+
+- `console`-Modus geht nicht: der Agent braucht einen SIP-Teilnehmer (AMD). Lokal testen = Worker starten und per Dispatch mit Test-Metadaten anrufen lassen (Stufe 4, nur interne Nummern).
+- Live-Tests: Gemini läuft als echtes Modell im Textmodus; GPT-Live ist audio-only, getestet wird dort sein Backend-Modell (siehe `agent/tests/test_behavior_live.py`).
+- Deploy auf LiveKit Cloud: Stufe 4, erst nach „bestätige“.
 
 ## 9. Übergabe am Ende jeder Session
 

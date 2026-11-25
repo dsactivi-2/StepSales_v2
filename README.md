@@ -14,12 +14,14 @@ Deutschsprachige KI-Telesales-Agents für Multiposting-Pakete auf **LiveKit Clou
 | `docs/analysis.md` | Modell-Verifizierung, Lücken, Risiken |
 | `docs/adr/` | Architekturentscheidungen |
 | `airtable/` | Schema der Airtable-Base „StepSales“ |
+| `agent/` | LiveKit-Agent-Code (GPT-Live + Gemini), Tests |
+| `docs/contracts/` | Schnittstellen n8n ↔ Agent |
 | `AGENTS.md` | Regeln für Coding-Agents und Mitarbeit |
 | `docs/agent-pack/` | Fachliche Aufgabe (Stepsales Agent Pack 00–11) |
 | `.env.example` | Benötigte Umgebungsvariablen (ohne Werte) |
 
 ## Status
 
-Planung. Code folgt nach Freigabe von `docs/PLAN.md`.
+Stufe 2 (Agent-Code) in Arbeit/Review. Nichts deployt, kein Workflow aktiv.
 
 Secrets gehören nie ins Repo – nur in `.env` (ignoriert) bzw. LiveKit-/n8n-Secrets.

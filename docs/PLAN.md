@@ -1,6 +1,6 @@
 # StepSales v2 – Bauplan
 
-Stand: 2026-11-25 · Status: **Entscheidungen erfasst; Stufe 1 wartet auf „bestätige“**
+Stand: 2026-11-25 · Status: **Stufe 1 fertig (Airtable), Stufe 2 im Review (Agent-Code)**
 
 ## Ziel
 
@@ -57,16 +57,19 @@ LiveKit Cloud (Projekt "StepSales")
 
 ### Agent-Tools (über einen n8n-Webhook, Auth per Secret-Header)
 
+Verbindlicher Vertrag mit allen Argumenten: [docs/contracts/tools-webhook.md](contracts/tools-webhook.md).
+Anrufstart durch n8n: [docs/contracts/dispatch-metadata.md](contracts/dispatch-metadata.md).
+
 | Tool | Zweck | Schreibt in |
 | --- | --- | --- |
 | `get_packages` | Aktive Pakete + Preise laden | – |
 | `qualify_lead` | Qualifizierung + Score | Leads |
 | `create_offer` | Angebot, Rabatt ≤ Paketgrenze, Preis serverseitig | Angebote |
-| `send_followup` | Recap/Angebot per Mail (E-Mail vorher bestätigt) | Follow-ups |
+| `send_followup` | Angebot/Recap/Material per Mail (E-Mail vorher bestätigt) | Follow-ups |
 | `schedule_second_call` | Zweittermin | Termine |
 | `send_payment_link` | Stripe-Checkout erzeugen + per Mail senden | Zahlungen |
-| `log_call_outcome` | Pflicht am Gesprächsende | Anrufe |
-| `end_call` | Auflegen | – |
+| `log_call_outcome` | Pflicht am Gesprächsende (sonst technischer Fallback durch Code) | Anrufe |
+| `end_call` | Auflegen (LiveKit EndCallTool, kein Webhook) | – |
 
 **Bewusst kein Agent-Tool:** `mark_payment_received`. Den Status „bezahlt“ setzt nur der Stripe-Webhook.
 
@@ -95,6 +98,8 @@ Lead-Status aus `docs/agent-pack/05`: new → reached → qualified → proposal
 | 6 | Pilot mit wenigen echten Leads | Ergebnisse geprüft |
 
 ## Offene Punkte
+
+0. **Neu aus Stufe 2:** Mailbox – Nachricht hinterlassen oder auflegen (aktuell: auflegen, ADR-0011)? LiveKit-Projekt mit EU-Datenregion angelegt (nicht nachträglich änderbar)? Deploy-Region `eu-central`?
 
 1. Mail: Standard-Dienst und Absender-Adresse für den Start (austauschbar, ADR-0010) – Issue #1
 2. Kalender: Standard (z. B. Google Calendar) und Default Mensch/Agent – Issue #2
