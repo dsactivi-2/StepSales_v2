@@ -1,0 +1,46 @@
+[project]
+name = "stepsales-agent"
+version = "0.1.0"
+description = "StepSales v2 – deutschsprachige Outbound-Telesales-Agents auf LiveKit (GPT-Live / Gemini Live)"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "livekit-agents~=1.8.13",
+    "livekit-api",
+    "python-dotenv>=1.0",
+    "aiohttp>=3.9",
+    "opentelemetry-sdk>=1.25",
+    "opentelemetry-exporter-otlp-proto-http>=1.25",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stepsales_agent"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = [
+    "live: braucht LIVEKIT_* und ruft LiveKit Inference (kostenpflichtig)",
+]
+addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/stepsales_agent/prompts.py" = ["E501"]
