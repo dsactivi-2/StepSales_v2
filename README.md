@@ -12,6 +12,8 @@ Deutschsprachige KI-Telesales-Agents für Multiposting-Pakete auf **LiveKit Clou
 | --- | --- |
 | `docs/PLAN.md` | Bauplan, Entscheidungen, Stufen, offene Punkte |
 | `docs/analysis.md` | Modell-Verifizierung, Lücken, Risiken |
+| `docs/adr/` | Architekturentscheidungen |
+| `AGENTS.md` | Regeln für Coding-Agents und Mitarbeit |
 | `docs/agent-pack/` | Fachliche Aufgabe (Stepsales Agent Pack 00–11) |
 | `.env.example` | Benötigte Umgebungsvariablen (ohne Werte) |
 

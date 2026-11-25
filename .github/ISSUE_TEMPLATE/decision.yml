@@ -1,0 +1,20 @@
+name: Entscheidung / Frage an Owner
+description: Offene Entscheidung, die Arbeit blockiert
+title: "[Entscheidung] "
+labels: ["type:decision"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Frage
+    validations: {required: true}
+  - type: textarea
+    id: options
+    attributes:
+      label: Optionen mit Trade-offs
+      description: Empfehlung zuerst
+  - type: textarea
+    id: blocks
+    attributes:
+      label: Blockiert
+      description: Welche Issues/Stufen warten darauf?

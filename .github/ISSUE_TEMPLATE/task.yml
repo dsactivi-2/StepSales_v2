@@ -1,0 +1,28 @@
+name: Aufgabe
+description: Umsetzbare Arbeit innerhalb einer Stufe
+title: "[Task] "
+labels: ["type:task"]
+body:
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Stufe
+      options: ["0 Setup", "1 Airtable", "2 Agent-Code", "3 n8n", "4 Deploy & SIP", "5 Stripe", "6 Pilot"]
+    validations: {required: true}
+  - type: textarea
+    id: goal
+    attributes:
+      label: Ziel
+      description: Was soll danach funktionieren?
+    validations: {required: true}
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien
+      description: Prüfbar, mit Befehl oder beobachtbarem Ergebnis
+      value: "- [ ] "
+    validations: {required: true}
+  - type: textarea
+    id: notes
+    attributes:
+      label: Kontext, Abhängigkeiten, Risiken
