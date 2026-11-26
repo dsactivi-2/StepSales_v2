@@ -10,6 +10,7 @@ dependencies = [
     "aiohttp>=3.9",
     "opentelemetry-sdk>=1.25",
     "opentelemetry-exporter-otlp-proto-http>=1.25",
+    "livekit-plugins-openai~=1.8.13",
 ]
 
 [dependency-groups]

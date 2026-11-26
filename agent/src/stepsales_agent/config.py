@@ -73,6 +73,9 @@ class Settings:
     test_calls_only: bool
     # Browser-Test ohne SIP und mit simulierten Tools (docs/runbooks/deploy-agents.md)
     web_test: bool = False
+    # GPT-Live: "inference" = LiveKit Inference (Guthaben LiveKit), "openai" = direkt mit
+    # eigenem OPENAI_API_KEY (ADR-0013). Gemini nutzt immer LiveKit Inference.
+    gptlive_backend: str = "inference"
 
     @property
     def is_gptlive(self) -> bool:
@@ -105,6 +108,13 @@ def load_settings() -> Settings:
         if not url.startswith("https://") and not url.startswith("http://localhost"):
             raise ConfigError("N8N_TOOLS_WEBHOOK_URL muss https verwenden")
 
+    gptlive_backend = (_env("STEPSALES_GPTLIVE_BACKEND", "inference") or "inference").lower()
+    if gptlive_backend not in ("inference", "openai"):
+        raise ConfigError("STEPSALES_GPTLIVE_BACKEND muss 'inference' oder 'openai' sein")
+    if variant == "gptlive" and gptlive_backend == "openai" and not _env("OPENAI_API_KEY"):
+        # fail-fast beim Start statt Abbruch mitten im ersten Gespräch
+        raise ConfigError("STEPSALES_GPTLIVE_BACKEND=openai braucht das Secret OPENAI_API_KEY")
+
     langfuse = all(
         _env(k) for k in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_BASE_URL")
     )
@@ -127,4 +137,5 @@ def load_settings() -> Settings:
         # bis zum Pilot (Stufe 6) nimmt der Agent nur Testanrufe an – zusätzlich zum Dispatcher
         test_calls_only=(_env("STEPSALES_TEST_CALLS_ONLY", "true") or "true").lower() != "false",
         web_test=web_test,
+        gptlive_backend=gptlive_backend,
     )
