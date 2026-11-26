@@ -71,6 +71,8 @@ class Settings:
     timezone: str
     langfuse_enabled: bool
     test_calls_only: bool
+    # Browser-Test ohne SIP und mit simulierten Tools (docs/runbooks/deploy-agents.md)
+    web_test: bool = False
 
     @property
     def is_gptlive(self) -> bool:
@@ -86,12 +88,22 @@ def load_settings() -> Settings:
         )
     variant: Variant = variant_raw  # type: ignore[assignment]
 
+    web_test = (_env("STEPSALES_WEB_TEST", "false") or "false").lower() == "true"
+    trunk = _env("LIVEKIT_SIP_OUTBOUND_TRUNK_ID")
+    if web_test and trunk:
+        # fail-closed: ein Test-Deployment darf nie wählen können
+        raise ConfigError("STEPSALES_WEB_TEST und LIVEKIT_SIP_OUTBOUND_TRUNK_ID schließen sich aus")
+
     url = _env("N8N_TOOLS_WEBHOOK_URL")
     secret = _env("N8N_TOOLS_WEBHOOK_SECRET")
-    if not url or not secret:
-        raise ConfigError("N8N_TOOLS_WEBHOOK_URL und N8N_TOOLS_WEBHOOK_SECRET sind Pflicht")
-    if not url.startswith("https://") and not url.startswith("http://localhost"):
-        raise ConfigError("N8N_TOOLS_WEBHOOK_URL muss https verwenden")
+    if web_test:
+        # Tools sind im Web-Test simuliert; n8n wird nie aufgerufen
+        url, secret = url or "", secret or ""
+    else:
+        if not url or not secret:
+            raise ConfigError("N8N_TOOLS_WEBHOOK_URL und N8N_TOOLS_WEBHOOK_SECRET sind Pflicht")
+        if not url.startswith("https://") and not url.startswith("http://localhost"):
+            raise ConfigError("N8N_TOOLS_WEBHOOK_URL muss https verwenden")
 
     langfuse = all(
         _env(k) for k in ("LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY", "LANGFUSE_BASE_URL")
@@ -106,7 +118,7 @@ def load_settings() -> Settings:
         tools_webhook_url=url,
         tools_webhook_secret=secret,
         tools_timeout_s=_env_float("STEPSALES_TOOLS_TIMEOUT_S", 8.0),
-        sip_outbound_trunk_id=_env("LIVEKIT_SIP_OUTBOUND_TRUNK_ID"),
+        sip_outbound_trunk_id=trunk,
         max_call_seconds=_env_float("STEPSALES_MAX_CALL_SECONDS", 600.0),
         company_name=_env("STEPSALES_COMPANY_NAME", "StepSales") or "StepSales",
         persona_name=_env("STEPSALES_PERSONA_NAME", "Lena Berger") or "Lena Berger",
@@ -114,4 +126,5 @@ def load_settings() -> Settings:
         langfuse_enabled=langfuse,
         # bis zum Pilot (Stufe 6) nimmt der Agent nur Testanrufe an – zusätzlich zum Dispatcher
         test_calls_only=(_env("STEPSALES_TEST_CALLS_ONLY", "true") or "true").lower() != "false",
+        web_test=web_test,
     )
