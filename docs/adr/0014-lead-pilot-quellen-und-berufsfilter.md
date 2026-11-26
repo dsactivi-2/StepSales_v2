@@ -61,6 +61,20 @@ Stand 2026-11-13, kaufmännische Sektoren:
 
 Umsetzung: Textsignale und Zählung pro Firma auf den Apify-Daten (kostenlos). Eine bezahlte Größenabfrage (North Data ab 500 €/Monat) erst, wenn im Pilot zu viele große Firmen durchrutschen. Inoffizielle North-Data-Scraper nutzen wir nicht.
 
+**Lead-Definition (Owner, 2026-11-27):** Pflicht sind Firma 10–249 Mitarbeitende ohne Ausschluss und eine Telefonnummer in der Anzeige. Der Name des Ansprechpartners ist wichtig, aber kein Ausschlussgrund.
+
+**Messung (26./27.11.2026, 680 Anzeigen, 6 Suchbegriffe, letzte 7 Tage; 95-%-Intervall):**
+
+| Portal | Leads mit Telefon je 100 Anzeigen | Kosten für 100 Leads | davon mit Name |
+| --- | ---: | ---: | ---: |
+| stellenanzeigen.de | 17,0 (12,4–22,8) | 4,41 $ (3,29–6,05) | 50 % |
+| StepStone | 6,7 (4,1–10,6) | 0,60 $ (0,38–0,98) | 44 % |
+| meinestadt.de | 3,3 (1,7–6,4) | 25,50 $ (13,28–50,00) | 100 % |
+
+Grenzen: Nur StepStone liefert die Firmengröße; bei den anderen wurden große Firmen per Regeln und Prüfung jedes Namens aussortiert. „Telefon“ ist jede Nummer im Anzeigentext, oft die Personalabteilung.
+
+**Quellen (Empfehlung, Freigabe offen):** stellenanzeigen.de als Hauptquelle, StepStone als Ergänzung. meinestadt und kimeta entfallen (kimeta: kein Apify-Actor). Damit ändert sich die Owner-Entscheidung F2.
+
 **Volumen-Check:** Der Index sagt nichts über die Menge. Der erste Pilotlauf zählt je Suchbegriff die Treffer auf kimeta und meinestadt (kleine Obergrenze). Begriffe mit zu wenig Treffern fliegen raus. So entsteht die eigene Statistik aus den Pilotportalen.
 
 **Aktualisierung:** monatlich neu berechnen (CSV abrufen, Tabelle oben ersetzen). Später kann das ein n8n-Schritt übernehmen.

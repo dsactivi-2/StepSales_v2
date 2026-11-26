@@ -5,10 +5,13 @@
   "quelle": "Indeed Hiring Lab, job_postings_by_sector_DE.csv, CC BY 4.0",
   "adr": "docs/adr/0014-lead-pilot-quellen-und-berufsfilter.md",
   "region": "bundesweit",
-  "portale": [
-    "kimeta.de",
-    "meinestadt.de"
-  ],
+  "portale": {
+    "status": "entwurf",
+    "haupt": "stellenanzeigen.de (santamaria-automations/stellenanzeigen-de-scraper, mit Details)",
+    "ergaenzung": "stepstone.de (valig/stepstone-jobs-scraper)",
+    "nicht": "meinestadt.de (nur 3,3 Leads mit Telefon je 100 Anzeigen)",
+    "kimeta": "kein Apify-Actor vorhanden"
+  },
   "firmengroesse": {
     "mitarbeitende_min": 10,
     "mitarbeitende_max": 249,
@@ -108,5 +111,15 @@
       "KGaA"
     ],
     "hinweis_sozial": "Soziale Träger, Pflege, Kita sind erlaubt. Raus nur bei Konzern/Großträger (>249 Mitarbeitende oder Verbundkonzern) oder öffentlicher Trägerschaft (Kommune, Land, Uniklinik, Körperschaft)."
+  },
+  "lead_definition": {
+    "pflicht": [
+      "Firma 10–249 Mitarbeitende, kein Ausschluss",
+      "Telefonnummer in der Anzeige"
+    ],
+    "optional": [
+      "Name des Ansprechpartners"
+    ],
+    "quelle": "Owner 2026-11-27"
   }
 }
