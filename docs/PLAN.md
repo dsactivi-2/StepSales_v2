@@ -99,7 +99,7 @@ Lead-Status aus `docs/agent-pack/05`: new → reached → qualified → proposal
 
 ## Offene Punkte
 
-000. **Neu aus #26 (Deploy Web-Test):** Der LiveKit-Plan erlaubt nur 1 Agent (`1/1`). Für A/B mit zwei gleichzeitig laufenden Agents Plan erhöhen, oder bis dahin ein Deployment zwischen den Varianten umschalten ([Runbook](runbooks/deploy.md)). Die Sprach-Simulation mit Gemini hat zwei Regelverstöße gezeigt: Die E-Mail wurde vor `send_followup` nicht bestätigt, und es gab keinen vereinbarten nächsten Schritt und keine Verabschiedung vor `end_call`. Das wird vor Stufe 4 im Prompt und/oder im Code abgesichert.
+000. **Neu aus #26/#28 (Deploy Web-Test):** Der LiveKit-Plan erlaubt nur 1 Agent (`1/1`). Das Deployment läuft jetzt als GPT-Live. Für A/B parallel muss der Plan erhöht werden ([Runbook](runbooks/deploy.md)). **Das Inference-Guthaben ist aufgebraucht** (429): ohne Plan-Upgrade oder neuen Abrechnungszyklus gibt es keine Gespräche. Gelöst in #28: E-Mail wird zurückgelesen, Abschluss mit nächstem Schritt, DNC-Sicherung im Code, automatisches Auflegen, KI-Offenlegung beim Anstoß durch den Code. Offen: Soll eine zugesagte Rückmeldung nach einem Angebot als Zweittermin (`schedule_second_call`) eingetragen werden oder reicht die Follow-up-Sequenz in n8n?
 
 00. **Neu aus Stufe 3:** n8n-Credentials anlegen (StepSales Airtable/Gmail/Google Calendar/Tools Secret/LiveKit) – n8n hat beim Anlegen Lina-Credentials zugewiesen, die vor der Aktivierung ersetzt werden müssen. `Config.livekit_api_key` und `mail_signatur` eintragen. Airtable-Plan prüfen (Monatskontingent API-Aufrufe). Feiertage als `Config.sperrtage`? Feld für `current_channels`?
 

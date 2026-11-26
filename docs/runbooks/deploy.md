@@ -2,12 +2,15 @@
 
 **Auslöser:** neue Agent-Version, Secret-Änderung, Wechsel Web-Test → Telefonie.
 
-## Stand (2026-11-26, Issue #26)
+## Stand (2026-11-26, Issues #26, #28)
 
-| Agent | Agent-ID | Region | Modus | Config-Datei |
-| --- | --- | --- | --- | --- |
-| `stepsales-gemini` | `CA_hsZnEzmbGUk9` | `eu-central` | Web-Test (kein SIP, simulierte Tools) | `agent/livekit.gemini.toml` |
-| `stepsales-gptlive` | – | – | nicht deployt | – |
+| Deployment | Agent-ID | Region | Läuft als | Modus | Config-Datei |
+| --- | --- | --- | --- | --- | --- |
+| eins (Plan-Grenze) | `CA_hsZnEzmbGUk9` | `eu-central` | `stepsales-gptlive` (`STEPSALES_VARIANT=gptlive`) | Web-Test (kein SIP, simulierte Tools) | `agent/livekit.toml` |
+
+`lk agent status` zeigt in der Spalte „Name“ weiterhin `stepsales-gemini`, den Namen aus der ersten Anlage. Welchen Agent-Namen der Worker tatsächlich anmeldet, steht im Log `registered worker` (`agent_name`).
+
+**Inference-Guthaben:** Am 2026-11-26 ist das Realtime-Kontingent des Projekts ausgelaufen (`Realtime (sts) credit quota exhausted`, 429). Ohne Guthaben bricht jede Session sofort ab, auch in der Agent Console. Lösung: Plan erhöhen oder auf den nächsten Abrechnungszyklus warten.
 
 **Grenze des LiveKit-Plans:** Das Projekt erlaubt derzeit **1 Agent** (`maximum number of agents reached (1/1)`). Für den A/B-Betrieb mit zwei gleichzeitig laufenden Agents braucht es einen höheren Plan (offener Punkt in `docs/PLAN.md`). Bis dahin lässt sich das eine Deployment zwischen den Varianten umschalten (unten).
 
@@ -34,24 +37,25 @@ Web-Test und SIP-Trunk schließen sich im Code aus (`load_settings` und `_run_ca
 
 1. Unit-Tests: `uv run pytest`, Lint: `uv run ruff check src tests`.
 2. Erstes Deployment: `lk agent create -y --region eu-central --config livekit.<variante>.toml --secrets-file <datei> .`
-3. Neue Version: `lk agent deploy -y --config livekit.gemini.toml .`
-4. Secrets ändern (startet neu): `lk agent update-secrets --config livekit.gemini.toml --secrets-file <datei>`
-   - Variante umschalten: `STEPSALES_VARIANT=gptlive` setzen. Der Agent meldet sich dann als `stepsales-gptlive` an. `livekit.gemini.toml` verweist weiter auf dieselbe Agent-ID.
+3. Neue Version: `lk agent deploy -y .`
+4. Secrets ändern (startet neu): `lk agent update-secrets --secrets-file <datei>`
+   - Variante umschalten (nur eine Variante setzen, bestehende Secrets bleiben): `lk agent update-secrets -y --secrets STEPSALES_VARIANT=gptlive`. Danach meldet sich der Agent als `stepsales-gptlive` an.
 
 ## Kontrolle danach
 
-- `lk agent status --config livekit.gemini.toml` → `Running`, Name wie erwartet.
-- `lk agent logs --config livekit.gemini.toml` → `registered worker`, kein `error initializing process`.
-- Sprach-Simulation (läuft komplett in LiveKit Cloud, kostet Inference):
-  `lk agent simulate audio --agent-name stepsales-gemini --scenarios simulations/webtest.yaml -y`
+- `lk agent status` → `Running`, Name wie erwartet.
+- `lk agent logs` → `registered worker`, kein `error initializing process`.
+- Sprach-Simulation (läuft komplett in LiveKit Cloud, kostet Inference; `-k 3` = jedes Szenario dreimal):
+  `lk agent simulate audio --agent-name stepsales-gptlive --scenarios simulations/webtest.yaml -k 3 --concurrency 2 -y`
+  Mit mehr als 2 parallelen Läufen sind auf dieser Instanz Fehler aufgetreten (Agent tritt nicht bei, hört nicht).
 - Selbst sprechen: LiveKit-Dashboard → Agents → Agent Console:
-  `https://cloud.livekit.io/projects/d_stepsalesv2-walghbs5/agents/console?agentName=stepsales-gemini&autoStart=false`
+  `https://cloud.livekit.io/projects/d_stepsalesv2-walghbs5/agents/console?agentName=stepsales-gptlive&autoStart=false`
   Im Web-Test eröffnet der Agent, sobald du verbunden bist. Der Lead ist fiktiv („TEST Musterbau GmbH“), die Pakete heißen „TEST-Paket S/M“. Es geht keine Mail raus, nichts wird gespeichert.
 
 ## Rollback
 
-- `lk agent versions --config livekit.gemini.toml` → Version wählen → `lk agent rollback --config livekit.gemini.toml`. Die Optionen zeigt `lk agent rollback --help`.
-- Notfall: `lk agent delete --config livekit.gemini.toml`. Danach ist die Agent-ID weg und es braucht ein neues `create`.
+- `lk agent versions` → Version wählen → `lk agent rollback`. Die Optionen zeigt `lk agent rollback --help`.
+- Notfall: `lk agent delete`. Danach ist die Agent-ID weg und es braucht ein neues `create`.
 
 ## Eskalation
 
