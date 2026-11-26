@@ -6,7 +6,7 @@
 
 | Deployment | Agent-ID | Region | Läuft als | Modus | Config-Datei |
 | --- | --- | --- | --- | --- | --- |
-| eins (Plan-Grenze) | `CA_hsZnEzmbGUk9` | `eu-central` | `stepsales-gptlive` (`STEPSALES_VARIANT=gptlive`) | Web-Test (kein SIP, simulierte Tools) | `agent/livekit.toml` |
+| eins (Plan-Grenze) | `CA_hsZnEzmbGUk9` | `eu-central` | `stepsales-gptlive` (`STEPSALES_VARIANT=gptlive`, seit 2026-11-26 `STEPSALES_GPTLIVE_BACKEND=openai`) | Web-Test (kein SIP, simulierte Tools) | `agent/livekit.toml` |
 
 `lk agent status` zeigt in der Spalte „Name“ weiterhin `stepsales-gemini`, den Namen aus der ersten Anlage. Welchen Agent-Namen der Worker tatsächlich anmeldet, steht im Log `registered worker` (`agent_name`).
 
@@ -36,6 +36,8 @@
 | `OPENAI_API_KEY` | Pflicht bei `openai`; nur im Dashboard eintragen (Agents → Agent → Secrets) | wie Web-Test |
 
 Web-Test und SIP-Trunk schließen sich im Code aus (`load_settings` und `_run_call`). Ein Web-Test-Deployment kann daher nie wählen.
+
+**Was deployt wird:** `lk agent deploy` lädt den Inhalt von `agent/` **aus dem lokalen Arbeitsverzeichnis** hoch, nicht aus GitHub. Deshalb immer von `main` deployen, nachdem der PR gemergt ist (`git checkout main && git pull`). Nur für Tests vor dem Merge darf vom Branch deployt werden; das gehört dann in den PR.
 
 ## Schritte
 
