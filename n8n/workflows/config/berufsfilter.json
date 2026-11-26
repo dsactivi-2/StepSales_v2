@@ -6,11 +6,12 @@
   "adr": "docs/adr/0014-lead-pilot-quellen-und-berufsfilter.md",
   "region": "bundesweit",
   "portale": {
-    "status": "entwurf",
+    "status": "freigegeben",
     "haupt": "stellenanzeigen.de (santamaria-automations/stellenanzeigen-de-scraper, mit Details)",
     "ergaenzung": "stepstone.de (valig/stepstone-jobs-scraper)",
     "nicht": "meinestadt.de (nur 3,3 Leads mit Telefon je 100 Anzeigen)",
-    "kimeta": "kein Apify-Actor vorhanden"
+    "kimeta": "kein Apify-Actor vorhanden",
+    "freigabe": "Owner 2026-11-27"
   },
   "firmengroesse": {
     "mitarbeitende_min": 10,
