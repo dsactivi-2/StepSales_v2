@@ -19,7 +19,10 @@ from stepsales_agent.main import fallback_outcome, on_conversation_item
         "Bitte nicht wieder anrufen!",
         "Keine weiteren Anrufe, danke.",
         "Nehmen Sie mich von Ihrer Liste.",
-        "Löschen Sie bitte meine Nummer. Meine Nummer bitte löschen.",
+        "Löschen Sie bitte meine Nummer.",
+        "Meine Nummer bitte löschen.",
+        "Entfernen Sie uns bitte aus dem Verteiler.",
+        "Streichen Sie meine Telefonnummer.",
     ],
 )
 def test_detects_clear_dnc_requests(text: str) -> None:
@@ -33,6 +36,8 @@ def test_detects_clear_dnc_requests(text: str) -> None:
         "Rufen Sie mich am Donnerstag an.",
         "Können Sie mich nächste Woche nochmal anrufen?",
         "Das ist gerade schlecht, rufen Sie später an.",
+        "Schicken Sie mir bitte die Unterlagen.",
+        "Löschen Sie meine alte Anzeige, die ist erledigt.",
         None,
         "",
     ],

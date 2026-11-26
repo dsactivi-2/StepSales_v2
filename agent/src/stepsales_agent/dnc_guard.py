@@ -20,7 +20,11 @@ _PATTERNS = [
     r"keine\s+(weiteren\s+)?anrufe",
     r"(von|aus)\s+(ihrer|eurer|der)\s+(anruf)?liste",
     r"(meine|unsere)\s+(nummer|daten)\s+(bitte\s+)?löschen",
-    r"(sperren|streichen)\s+sie\s+(mich|uns|meine\s+nummer)",
+    r"(sperren|streichen)\s+sie\s+(bitte\s+)?(mich|uns)\b",
+    # Objekt Pflicht, damit z. B. „löschen Sie meine alte Anzeige“ nicht zählt
+    r"(sperren|streichen|löschen|entfernen)\s+sie\s+(bitte\s+)?(meine|unsere)\s+"
+    r"(telefon)?(nummer|daten|kontaktdaten)",
+    r"(löschen|entfernen)\s+sie\s+(bitte\s+)?(mich|uns)\s+(bitte\s+)?(aus|von)\b",
 ]
 _DNC = re.compile("|".join(_PATTERNS), re.IGNORECASE)
 
