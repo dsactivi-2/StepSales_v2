@@ -14,6 +14,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionierung:
 - Owner-Entscheidungen 11–17 in `docs/PLAN.md`, ADR-0010 (Mail/Kalender konfigurierbar).
 - Init: Bauplan, Analyse, Stepsales Agent Pack.
 
+### Tests
+- Regression nach #24/#25: E.164-Grenzen, SIP 408, Schema-Vertrag Agent↔Airtable, n8n-Code-Nodes (Kill-Switch, Rabatt, topic, Mail-Idempotenz, Dispatch fail-closed).
+
 ### Fixed
 - Agent: Entrypoint auf Modulebene. Als Closure war er nicht picklebar, und jeder Job-Prozess scheiterte in LiveKit Cloud (#26).
 - Analyse: Gemini 3.8 Live hat über LiveKit Inference einen EU-Endpoint.
