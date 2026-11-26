@@ -38,6 +38,8 @@ def test_detects_clear_dnc_requests(text: str) -> None:
         "Das ist gerade schlecht, rufen Sie später an.",
         "Schicken Sie mir bitte die Unterlagen.",
         "Löschen Sie meine alte Anzeige, die ist erledigt.",
+        "Löschen Sie meine Datenbank-Einträge zur Stelle.",
+        "Entfernen Sie unsere Datenschutzerklärung nicht.",
         None,
         "",
     ],

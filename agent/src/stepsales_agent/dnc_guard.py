@@ -23,7 +23,7 @@ _PATTERNS = [
     r"(sperren|streichen)\s+sie\s+(bitte\s+)?(mich|uns)\b",
     # Objekt Pflicht, damit z. B. „löschen Sie meine alte Anzeige“ nicht zählt
     r"(sperren|streichen|löschen|entfernen)\s+sie\s+(bitte\s+)?(meine|unsere)\s+"
-    r"(telefon)?(nummer|daten|kontaktdaten)",
+    r"(telefon)?(nummer|daten|kontaktdaten)\b",
     r"(löschen|entfernen)\s+sie\s+(bitte\s+)?(mich|uns)\s+(bitte\s+)?(aus|von)\b",
 ]
 _DNC = re.compile("|".join(_PATTERNS), re.IGNORECASE)
