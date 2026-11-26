@@ -27,6 +27,7 @@ from livekit.agents import (
     room_io,
 )
 
+from .auto_hangup import AutoHangup
 from .call_context import CallContext, MetadataError, parse_metadata
 from .config import Settings, load_settings
 from .dnc_guard import DNC_FALLBACK_REASON, detects_dnc
@@ -170,10 +171,12 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
         )
     technical = {"outcome": "failed", "reason": "Gespräch ohne gespeichertes Ergebnis beendet"}
     watchdog: asyncio.Task[None] | None = None
+    hangup = AutoHangup(state, lambda: ctx.shutdown("auto hangup after outcome"))
 
     async def on_shutdown() -> None:
         if watchdog is not None:
             watchdog.cancel()
+        hangup.cancel()
         await _report_technical_outcome(client, state, *fallback_outcome(technical))
         await client.aclose()
         if tracer is not None:
@@ -200,6 +203,14 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
     @session.on("close")
     def _on_close(_ev: object) -> None:
         ctx.shutdown("session closed")
+
+    @session.on("agent_state_changed")
+    def _on_agent_state(ev: Any) -> None:
+        hangup.on_agent_state(ev.new_state)
+
+    @session.on("user_state_changed")
+    def _on_user_state(ev: Any) -> None:
+        hangup.on_user_state(ev.new_state)
 
     @session.on("conversation_item_added")
     def _on_item(ev: Any) -> None:
@@ -245,6 +256,7 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
         ctx.shutdown("max duration")
 
     watchdog = asyncio.create_task(_limit_duration())
+    hangup.start()
 
 
 async def _dial_and_detect(
