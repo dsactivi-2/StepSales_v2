@@ -10,6 +10,8 @@
 
 `lk agent status` zeigt in der Spalte „Name“ weiterhin `stepsales-gemini`, den Namen aus der ersten Anlage. Welchen Agent-Namen der Worker tatsächlich anmeldet, steht im Log `registered worker` (`agent_name`).
 
+**GPT-Live über eigenen OpenAI-Key ([ADR-0013](../adr/0013-gptlive-direkt-ueber-openai.md)):** `OPENAI_API_KEY` im Dashboard als Secret eintragen, dann `lk agent update-secrets -y --secrets STEPSALES_GPTLIVE_BACKEND=openai`. Zurück: `…=inference`.
+
 **Inference-Guthaben:** Am 2026-11-26 ist das Realtime-Kontingent des Projekts ausgelaufen (`Realtime (sts) credit quota exhausted`, 429). Ohne Guthaben bricht jede Session sofort ab, auch in der Agent Console. Lösung: Plan erhöhen oder auf den nächsten Abrechnungszyklus warten.
 
 **Grenze des LiveKit-Plans:** Das Projekt erlaubt derzeit **1 Agent** (`maximum number of agents reached (1/1)`). Für den A/B-Betrieb mit zwei gleichzeitig laufenden Agents braucht es einen höheren Plan (offener Punkt in `docs/PLAN.md`). Bis dahin lässt sich das eine Deployment zwischen den Varianten umschalten (unten).
@@ -30,6 +32,8 @@
 | `LIVEKIT_SIP_OUTBOUND_TRUNK_ID` | **nicht setzen** (sonst Startfehler) | Pflicht |
 | `N8N_TOOLS_WEBHOOK_URL` / `_SECRET` | nicht nötig | Pflicht |
 | `LANGFUSE_BASE_URL` / `_PUBLIC_KEY` / `_SECRET_KEY` | optional | empfohlen |
+| `STEPSALES_GPTLIVE_BACKEND` | `inference` (Default) oder `openai` | wie Web-Test |
+| `OPENAI_API_KEY` | Pflicht bei `openai`; nur im Dashboard eintragen (Agents → Agent → Secrets) | wie Web-Test |
 
 Web-Test und SIP-Trunk schließen sich im Code aus (`load_settings` und `_run_call`). Ein Web-Test-Deployment kann daher nie wählen.
 
