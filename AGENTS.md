@@ -35,7 +35,7 @@ docs/runbooks/       Betrieb: Kill-Switch, Deploy, Rollback, Incidents
 .github/             Issue-/PR-Templates, CODEOWNERS
 agent/               Python-Code LiveKit Agents (beide Varianten, Tests)
 docs/contracts/      Schnittstellen n8n ↔ Agent (Dispatch-Metadaten, Tools-Webhook)
-n8n/workflows/       (geplant, Stufe 3) exportierte Workflow-JSONs, ohne Credentials
+n8n/workflows/       n8n-Workflows als SDK-Quelltext (src/), ohne Credentials; README mit IDs + Aktivierung
 airtable/            Schema der Base „StepSales“ (schema.md + schema.json mit Feld-IDs)
 ```
 
@@ -89,7 +89,7 @@ Neue Top-Level-Ordner nur mit ADR oder Freigabe im Issue.
 | Agent-Prompt, Persona, Gesprächsregeln | `agent/` Prompt-Datei + §5 falls Regel neu |
 | Agent-Tool (Name, Ein-/Ausgabe) | Tool-Tabelle in `docs/PLAN.md` + n8n-Webhook + Tests |
 | Airtable-Schema | `airtable/schema.md` |
-| n8n-Workflow | Export nach `n8n/workflows/` + Beschreibung im Workflow |
+| n8n-Workflow | Quelltext in `n8n/workflows/src/` + `n8n/workflows/README.md` + Beschreibung im Workflow |
 | Betrieb (Deploy, Kill-Switch, Rollback) | `docs/runbooks/` |
 | Release | `CHANGELOG.md` |
 

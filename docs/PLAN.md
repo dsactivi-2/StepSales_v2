@@ -1,6 +1,6 @@
 # StepSales v2 – Bauplan
 
-Stand: 2026-11-25 · Status: **Stufe 1 fertig (Airtable), Stufe 2 im Review (Agent-Code)**
+Stand: 2026-11-26 · Status: **Stufe 1–2 fertig, Stufe 3 im Review (n8n-Workflows, inaktiv)**
 
 ## Ziel
 
@@ -57,7 +57,7 @@ LiveKit Cloud (Projekt "StepSales")
 
 ### Agent-Tools (über einen n8n-Webhook, Auth per Secret-Header)
 
-Verbindlicher Vertrag mit allen Argumenten: [docs/contracts/tools-webhook.md](contracts/tools-webhook.md).
+Verbindlicher Vertrag mit allen Argumenten: [docs/contracts/tools-webhook.md](contracts/tools-webhook.md). n8n-Umsetzung: [n8n/workflows/README.md](../n8n/workflows/README.md).
 Anrufstart durch n8n: [docs/contracts/dispatch-metadata.md](contracts/dispatch-metadata.md).
 
 | Tool | Zweck | Schreibt in |
@@ -67,7 +67,7 @@ Anrufstart durch n8n: [docs/contracts/dispatch-metadata.md](contracts/dispatch-m
 | `create_offer` | Angebot, Rabatt ≤ Paketgrenze, Preis serverseitig | Angebote |
 | `send_followup` | Angebot/Recap/Material per Mail (E-Mail vorher bestätigt) | Follow-ups |
 | `schedule_second_call` | Zweittermin | Termine |
-| `send_payment_link` | Stripe-Checkout erzeugen + per Mail senden | Zahlungen |
+| `send_payment_link` | Stripe-Checkout erzeugen + per Mail senden (bis Stufe 5: `payment_not_enabled`) | Zahlungen |
 | `log_call_outcome` | Pflicht am Gesprächsende (sonst technischer Fallback durch Code) | Anrufe |
 | `end_call` | Auflegen (LiveKit EndCallTool, kein Webhook) | – |
 
@@ -98,6 +98,8 @@ Lead-Status aus `docs/agent-pack/05`: new → reached → qualified → proposal
 | 6 | Pilot mit wenigen echten Leads | Ergebnisse geprüft |
 
 ## Offene Punkte
+
+00. **Neu aus Stufe 3:** n8n-Credentials anlegen (StepSales Airtable/Gmail/Google Calendar/Tools Secret/LiveKit) – n8n hat beim Anlegen Lina-Credentials zugewiesen, die vor der Aktivierung ersetzt werden müssen. `Config.livekit_api_key` und `mail_signatur` eintragen. Airtable-Plan prüfen (Monatskontingent API-Aufrufe). Feiertage als `Config.sperrtage`? Feld für `current_channels`?
 
 0. **Neu aus Stufe 2:** Mailbox – Nachricht hinterlassen oder auflegen (aktuell: auflegen, ADR-0011)? LiveKit-Projekt mit EU-Datenregion angelegt (nicht nachträglich änderbar)? Deploy-Region `eu-central`?
 

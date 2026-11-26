@@ -220,15 +220,15 @@ class SalesAgent(Agent):
         self,
         context: RunContext,
         start_iso: str,
+        topic: str,
         email: str | None = None,
-        topic: str | None = None,
     ) -> dict[str, Any]:
         """Trägt einen mit der Person vereinbarten Zweittermin ein.
 
         Args:
             start_iso: Beginn in Europe/Berlin, ISO 8601, z. B. 2026-12-01T10:30:00+01:00.
             email: Bestätigte E-Mail für die Terminbestätigung, falls gewünscht.
-            topic: Worum es im Zweittermin gehen soll.
+            topic: Pflicht. Worum es im Zweittermin geht und wo das Erstgespräch stand.
         """
         return await self._call(
             "schedule_second_call", {"start_iso": start_iso, "email": email, "topic": topic}
