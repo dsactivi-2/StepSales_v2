@@ -83,7 +83,7 @@ class FakeToolsClient:
         self._seq += 1
         clean = {k: v for k, v in (args or {}).items() if v is not None}
         self.calls.append((tool, clean))
-        logger.info("web-test tool", extra={"tool": tool, "args": clean})
+        logger.info("web-test tool", extra={"tool": tool, "tool_args": clean})
         handler = getattr(self, f"_{tool}", None)
         if handler is None:
             raise ToolRejected("unknown_tool", f"Tool {tool} unbekannt")

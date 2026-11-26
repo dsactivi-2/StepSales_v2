@@ -94,3 +94,20 @@ async def test_fake_second_call_requires_topic() -> None:
     with pytest.raises(ToolRejected) as exc:
         await client.call("schedule_second_call", {"start_iso": "2026-12-01T10:00:00+01:00"})
     assert exc.value.code == "topic_missing"
+
+
+async def test_fake_tools_log_without_reserved_record_keys(caplog) -> None:
+    """Regression: extra={"args": ...} überschreibt LogRecord.args und wirft KeyError."""
+    import logging
+
+    caplog.set_level(logging.INFO, logger="stepsales.webtest")
+    client = FakeToolsClient(call_id=ROOM)
+    for tool, args in [
+        ("get_packages", {}),
+        ("qualify_lead", {"active_hiring": True}),
+        ("send_followup", {"email": "test@example.invalid", "followup_type": "recap"}),
+        ("send_payment_link", {"offer_id": "x", "email": "test@example.invalid"}),
+        ("log_call_outcome", {"outcome": "no_answer", "summary": "x"}),
+    ]:
+        await client.call(tool, args)
+    assert len(client.calls) == 5

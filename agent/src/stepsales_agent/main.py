@@ -197,7 +197,7 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
         # Browser-Teilnehmer statt SIP: kein Wählen, kein AMD.
         try:
             await asyncio.wait_for(ctx.wait_for_participant(), WEB_TEST_JOIN_TIMEOUT_S)
-        except TimeoutError:
+        except (TimeoutError, RuntimeError):  # RuntimeError: Raum vorher geschlossen
             technical.update(outcome="no_answer", reason="Web-Test: niemand beigetreten")
             ctx.shutdown("web test no participant")
             return
