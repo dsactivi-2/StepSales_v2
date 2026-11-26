@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import Any
 
 from dotenv import load_dotenv
 from livekit import api
@@ -28,6 +29,7 @@ from livekit.agents import (
 
 from .call_context import CallContext, MetadataError, parse_metadata
 from .config import Settings, load_settings
+from .dnc_guard import DNC_FALLBACK_REASON, detects_dnc
 from .models import build_llm, build_vad
 from .n8n_client import ToolRejected, ToolsClient, ToolsUnavailable
 from .prompts import backend_instructions, combined_instructions, voice_instructions
@@ -56,6 +58,23 @@ def _technical_from_sip(exc: api.SipCallError) -> tuple[str, str]:
     sip_outcome = _sip_outcome(exc)
     outcome = "failed" if sip_outcome == "failed" else "no_answer"
     return outcome, f"SIP {exc.sip_status_code} {exc.sip_status} ({sip_outcome})"
+
+
+def on_conversation_item(item: Any, technical: dict[str, str]) -> None:
+    """DNC-Sicherung: Sperrwunsch der Person merken, falls das Modell ihn nicht speichert."""
+    if getattr(item, "role", None) != "user":
+        return
+    text = item.text_content if hasattr(item, "text_content") else None
+    if detects_dnc(text) and not technical.get("dnc_detected"):
+        # eigener Schlüssel: spätere technical.update (Zeitlimit o. Ä.) überschreiben ihn nicht
+        logger.info("dnc request detected in user speech")
+        technical["dnc_detected"] = "true"
+
+
+def fallback_outcome(technical: dict[str, str]) -> tuple[str, str]:
+    if technical.get("dnc_detected"):
+        return "dnc_requested", DNC_FALLBACK_REASON
+    return technical["outcome"], technical["reason"]
 
 
 async def _report_technical_outcome(
@@ -155,7 +174,7 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
     async def on_shutdown() -> None:
         if watchdog is not None:
             watchdog.cancel()
-        await _report_technical_outcome(client, state, technical["outcome"], technical["reason"])
+        await _report_technical_outcome(client, state, *fallback_outcome(technical))
         await client.aclose()
         if tracer is not None:
             tracer.force_flush()
@@ -181,6 +200,10 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
     @session.on("close")
     def _on_close(_ev: object) -> None:
         ctx.shutdown("session closed")
+
+    @session.on("conversation_item_added")
+    def _on_item(ev: Any) -> None:
+        on_conversation_item(ev.item, technical)
 
     agent = SalesAgent(instructions=instructions, tools_client=client, state=state)  # type: ignore[arg-type]
     await session.start(
