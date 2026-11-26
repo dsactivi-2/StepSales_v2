@@ -1,6 +1,6 @@
 # ADR-0014: Lead-Pilot – Quellen und Berufsfilter
 
-- **Status:** Vorgeschlagen (Owner-Entscheidungen F1–F3 vom 2026-11-26 eingearbeitet; Filterliste wartet auf Freigabe)
+- **Status:** Vorgeschlagen (Owner-Entscheidungen F1–F3, Firmengröße und Ausschlüsse vom 2026-11-26 eingearbeitet; Suchbegriffe warten auf Freigabe)
 - **Datum:** 2026-11-26
 - **Issue:** #36
 
@@ -39,14 +39,26 @@ Stand 2026-11-13, kaufmännische Sektoren:
 | Banking & Finance | 102,6 | 89,8 | **1,14** | +0,1 % |
 | Administrative Assistance | 100,9 | 92,7 | **1,09** | −16,0 % |
 | Customer Service | 68,3 | 62,8 | 1,09 | −24,6 % |
-| Legal | 91,4 | 86,0 | **1,06** | −1,5 % |
+| Legal | 91,4 | 86,0 | 1,06 (ausgeschlossen) | −1,5 % |
 | Project Management | 79,9 | 79,6 | 1,00 | −9,1 % |
 | Sales | 93,5 | 103,0 | 0,91 | −11,0 % |
 | Management | 106,4 | 118,9 | 0,89 | −8,2 % |
 | Marketing | 62,2 | 74,5 | 0,84 | −15,5 % |
 | Human Resources | 79,4 | 99,1 | 0,80 | −4,6 % |
 
-**Pilot-Filter:** die fünf Sektoren mit total/neu > 1,05, ohne Customer Service (stärkster Rückgang, eher Callcenter als kaufmännisch). Suchbegriffe stehen in [`n8n/workflows/config/berufsfilter.json`](../../n8n/workflows/config/berufsfilter.json).
+**Pilot-Filter (Beruf):** Buchhaltung, Büro/Assistenz, Controlling, Versicherungskaufleute. Suchbegriffe in [`n8n/workflows/config/berufsfilter.json`](../../n8n/workflows/config/berufsfilter.json). Recht (Legal) ist trotz Wert 1,06 komplett raus, Customer Service ebenfalls (stärkster Rückgang).
+
+**Arbeitgeber-Filter (Owner, 2026-11-26):**
+
+- **Größe 10–249 Mitarbeitende.** Ist die Größe unbekannt, bleibt der Lead, sofern keine Ausschlussregel greift.
+- **Keine rechtsnahen Arbeitgeber:** Rechtsanwälte, Notare, Steuerberater, Wirtschaftsprüfer. Begründung Owner: Diese suchen gezielt nach Angriffspunkten für Abmahnungen; einen Rechtsstreit sparen wir uns, auch wenn die Begründung für den Anruf trägt.
+- **Keine Konzerne und Verbünde:** Banken, Sparkassen, Volks- und Raiffeisenbanken, Versicherungsgesellschaften, DAX/MDAX/SDAX. Sie haben Rahmenverträge und entscheiden nicht frei.
+- **Kein öffentlicher Dienst:** Vergaberecht, Ausschreibungspflicht.
+- **Keine Personaldienstleister:** nicht der echte Arbeitgeber.
+- **Mehr als 9 Anzeigen einer Firma im Lauf:** raus (Konzern-Signal, Grenze ist eine Annahme).
+- **Rechtsform AG, SE, KGaA:** nur Warnsignal, kein Ausschluss.
+
+Umsetzung: Textsignale und Zählung pro Firma auf den Apify-Daten (kostenlos). Eine bezahlte Größenabfrage (North Data ab 500 €/Monat) erst, wenn im Pilot zu viele große Firmen durchrutschen. Inoffizielle North-Data-Scraper nutzen wir nicht.
 
 **Volumen-Check:** Der Index sagt nichts über die Menge. Der erste Pilotlauf zählt je Suchbegriff die Treffer auf kimeta und meinestadt (kleine Obergrenze). Begriffe mit zu wenig Treffern fliegen raus. So entsteht die eigene Statistik aus den Pilotportalen.
 
