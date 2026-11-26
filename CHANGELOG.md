@@ -5,6 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionierung:
 ## [Unreleased]
 
 ### Added
+- Lead-Pilot (#36): ADR-0014 mit Owner-Entscheidungen (kimeta + meinestadt über Apify, bundesweit) und Berufsfilter aus Indeed Hiring Lab (CC BY 4.0). Filterentwurf `n8n/workflows/config/berufsfilter.json`.
 - GPT-Live optional direkt über OpenAI mit eigenem Key: `STEPSALES_GPTLIVE_BACKEND=openai` und `OPENAI_API_KEY` (#30, ADR-0013).
 - Agent (#28): menschlichere Sprechweise und aktives Zuhören im Prompt (angelehnt an OpenAI „Prompting GPT-Live“). Pflichtablauf für das Zurücklesen der E-Mail und für das Gesprächsende. DNC-Sicherung im Code (`dnc_guard.py`): Ein ausgesprochener Sperrwunsch wird zu `dnc_requested`, falls das Modell nichts speichert. Automatisches Auflegen nach gespeichertem Ergebnis und 5 s Ruhe (`auto_hangup.py`). Expliziter Eröffnungsanstoß mit KI-Offenlegung. Das Deployment läuft als `stepsales-gptlive`.
 - Browser-Testmodus `STEPSALES_WEB_TEST` (#26): kein SIP, kein AMD, simulierte Tools mit fiktiven TEST-Daten, fail-closed gegenüber `LIVEKIT_SIP_OUTBOUND_TRUNK_ID`. Dockerfile für LiveKit Cloud, Runbook `deploy.md`, Sprach-Simulationen `agent/simulations/webtest.yaml`. `stepsales-gemini` in `eu-central` deployt (Web-Test).
