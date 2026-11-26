@@ -82,3 +82,19 @@ def test_discount_rules_present(call_ctx) -> None:
 
 def test_dnc_rule_in_backend() -> None:
     assert "dnc_requested" in backend_instructions(make_settings())
+
+
+def test_email_must_be_read_back_before_any_send(call_ctx) -> None:
+    from stepsales_agent.prompts import backend_instructions, voice_instructions
+
+    voice = voice_instructions(call_ctx, make_settings())
+    assert "zurücklesen" in voice and "klares Ja" in voice
+    assert "ausdrücklich" in backend_instructions(make_settings())
+
+
+def test_closing_requires_next_step_and_goodbye(call_ctx) -> None:
+    from stepsales_agent.prompts import voice_instructions
+
+    voice = voice_instructions(call_ctx, make_settings())
+    assert "nächsten Schritt in einem Satz zusammenfassen" in voice
+    assert "Erst nach der Verabschiedung auflegen" in voice
