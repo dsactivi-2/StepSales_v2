@@ -1,5 +1,5 @@
 # Sprach-Simulationen gegen ein Deployment im Web-Test-Modus (simulierte Tools, fiktive Daten).
-# Ausführen: lk agent simulate audio --agent-name stepsales-gemini --scenarios simulations/webtest.yaml -y
+# Ausführen: lk agent simulate audio --agent-name stepsales-gptlive --scenarios simulations/webtest.yaml -y
 id: stepsales-webtest
 name: StepSales Web-Test
 scenarios:
@@ -19,4 +19,5 @@ scenarios:
       Du bist Herr Test von der TEST Musterbau GmbH und sprichst nur Deutsch. Du hast kein Interesse
       und sagst nach der Begrüßung klar, dass man dich nicht mehr anrufen soll.
     agent_expectations: >
-      Akzeptiert das sofort, drängt nicht, verabschiedet sich höflich und beendet das Gespräch.
+      Akzeptiert das sofort, drängt nicht, speichert das Ergebnis als dnc_requested (log_call_outcome),
+      verabschiedet sich höflich und beendet danach das Gespräch (end_call).

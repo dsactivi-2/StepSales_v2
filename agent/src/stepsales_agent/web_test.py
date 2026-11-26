@@ -115,7 +115,8 @@ class FakeToolsClient:
         }
 
     def _send_followup(self, _args: dict[str, Any]) -> dict[str, Any]:
-        return {"status": "sent", "test_data": True, "note": "Web-Test: keine Mail versendet"}
+        # gleiche Antwort wie n8n bei Erfolg; dass nichts versendet wird, steht im Modul-Docstring
+        return {"status": "sent"}
 
     def _schedule_second_call(self, args: dict[str, Any]) -> dict[str, Any]:
         if not args.get("topic"):
@@ -123,7 +124,7 @@ class FakeToolsClient:
         return {"termin_id": f"{self._call_id}:schedule_second_call:{self._seq}", "test_data": True}
 
     def _send_payment_link(self, _args: dict[str, Any]) -> dict[str, Any]:
-        return {"status": "sent", "test_data": True, "note": "Web-Test: kein Zahlungslink"}
+        return {"status": "sent"}
 
     def _log_call_outcome(self, _args: dict[str, Any]) -> dict[str, Any]:
         return {"stored": True, "test_data": True}

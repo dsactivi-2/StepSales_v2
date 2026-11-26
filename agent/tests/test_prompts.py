@@ -98,3 +98,10 @@ def test_closing_requires_next_step_and_goodbye(call_ctx) -> None:
     voice = voice_instructions(call_ctx, make_settings())
     assert "nächsten Schritt in einem Satz zusammenfassen" in voice
     assert "Erst nach der Verabschiedung auflegen" in voice
+
+
+def test_dnc_requires_saving_before_goodbye(call_ctx) -> None:
+    from stepsales_agent.prompts import voice_instructions
+
+    voice = voice_instructions(call_ctx, make_settings())
+    assert "zwingend das Gesprächsergebnis „nicht mehr anrufen“ speichern" in voice
