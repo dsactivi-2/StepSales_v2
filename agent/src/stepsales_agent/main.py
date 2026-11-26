@@ -186,15 +186,17 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
     await session.start(
         agent=agent,
         room=ctx.room,
-        room_options=room_io.RoomOptions(participant_identity=CALLEE_IDENTITY),
+        # Web-Test (Agent Console im LiveKit-Dashboard): Identität des Browsers ist beliebig,
+        # die Session hängt sich an den ersten Teilnehmer
+        room_options=room_io.RoomOptions(
+            participant_identity=None if settings.web_test else CALLEE_IDENTITY
+        ),
     )
 
     if settings.web_test:
         # Browser-Teilnehmer statt SIP: kein Wählen, kein AMD.
         try:
-            await asyncio.wait_for(
-                ctx.wait_for_participant(identity=CALLEE_IDENTITY), WEB_TEST_JOIN_TIMEOUT_S
-            )
+            await asyncio.wait_for(ctx.wait_for_participant(), WEB_TEST_JOIN_TIMEOUT_S)
         except TimeoutError:
             technical.update(outcome="no_answer", reason="Web-Test: niemand beigetreten")
             ctx.shutdown("web test no participant")
