@@ -7,7 +7,7 @@ import dataclasses
 import pytest
 from conftest import make_settings
 
-from stepsales_agent.config import ConfigError, load_settings
+from stepsales_agent.config import DEFAULT_MODELS, ConfigError, load_settings
 from stepsales_agent.models import build_llm
 
 
@@ -48,9 +48,17 @@ def test_openai_backend_builds_plugin_model(monkeypatch) -> None:
     settings = dataclasses.replace(
         make_settings(),
         variant="gptlive",
-        model="gpt-live-1",
+        model=DEFAULT_MODELS["gptlive"],  # Produktions-Default mit Inference-Präfix
         voice="marin",
         gptlive_backend="openai",
     )
     model = build_llm(settings, "backend")
     assert isinstance(model, GPTLiveModel)
+    assert model._opts.model == "gpt-live-1"
+
+
+def test_openai_model_id_strips_inference_prefix() -> None:
+    from stepsales_agent.models import openai_model_id
+
+    assert openai_model_id("openai/gpt-live-1") == "gpt-live-1"
+    assert openai_model_id("gpt-live-1") == "gpt-live-1"
