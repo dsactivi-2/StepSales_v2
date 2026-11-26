@@ -1,0 +1,125 @@
+{
+  "status": "entwurf",
+  "freigabe": null,
+  "stand_daten": "2026-11-13",
+  "quelle": "Indeed Hiring Lab, job_postings_by_sector_DE.csv, CC BY 4.0",
+  "adr": "docs/adr/0014-lead-pilot-quellen-und-berufsfilter.md",
+  "region": "bundesweit",
+  "portale": {
+    "status": "entwurf",
+    "haupt": "stellenanzeigen.de (santamaria-automations/stellenanzeigen-de-scraper, mit Details)",
+    "ergaenzung": "stepstone.de (valig/stepstone-jobs-scraper)",
+    "nicht": "meinestadt.de (nur 3,3 Leads mit Telefon je 100 Anzeigen)",
+    "kimeta": "kein Apify-Actor vorhanden"
+  },
+  "firmengroesse": {
+    "mitarbeitende_min": 10,
+    "mitarbeitende_max": 249,
+    "quelle": "Owner 2026-11-26",
+    "wenn_unbekannt": "behalten, sofern keine Ausschlussregel greift"
+  },
+  "sektoren": [
+    {
+      "indeed_sektor": "Accounting",
+      "total_neu": 1.21,
+      "suchbegriffe": [
+        "Finanzbuchhalter",
+        "Bilanzbuchhalter",
+        "Lohnbuchhalter"
+      ]
+    },
+    {
+      "indeed_sektor": "Administrative Assistance",
+      "total_neu": 1.09,
+      "suchbegriffe": [
+        "Kaufmännischer Sachbearbeiter",
+        "Office Manager",
+        "Assistenz der Geschäftsführung"
+      ]
+    },
+    {
+      "indeed_sektor": "Banking & Finance",
+      "total_neu": 1.14,
+      "suchbegriffe": [
+        "Controller"
+      ],
+      "hinweis": "nur Mittelstand als Arbeitgeber; Banken fallen über die Sperrliste raus"
+    },
+    {
+      "indeed_sektor": "Insurance",
+      "total_neu": 1.67,
+      "suchbegriffe": [
+        "Kaufmann für Versicherungen und Finanzanlagen",
+        "Sachbearbeiter Versicherung"
+      ],
+      "hinweis": "nur kleine Makler und Agenturen; Versicherer fallen über die Sperrliste raus"
+    },
+    {
+      "indeed_sektor": "Nursing, Childcare, Community & Social Service",
+      "total_neu": {
+        "Nursing": 1.35,
+        "Childcare": 1.06,
+        "Community & Social Service": 1.02
+      },
+      "suchbegriffe": [
+        "Pflegefachkraft",
+        "Altenpfleger",
+        "Heilerziehungspfleger",
+        "Erzieher"
+      ],
+      "hinweis": "Branche erlaubt (Owner 2026-11-26); ausgeschlossen nur Konzerne/Großträger und öffentliche Einrichtungen"
+    }
+  ],
+  "ausschluss": {
+    "anzeigen_pro_firma_max": 9,
+    "arbeitgeber_branchen": [
+      "Rechtsanwaltskanzlei",
+      "Notariat",
+      "Steuerberatung",
+      "Wirtschaftsprüfung",
+      "Bank, Sparkasse, Volksbank/Raiffeisenbank",
+      "Versicherungsgesellschaft",
+      "Öffentlicher Dienst",
+      "Personaldienstleister / Zeitarbeit / Personalvermittlung"
+    ],
+    "textsignale": [
+      "Rechtsanwalt",
+      "Rechtsanwälte",
+      "Kanzlei",
+      "Notar",
+      "Steuerberater",
+      "Steuerkanzlei",
+      "Wirtschaftsprüfer",
+      "TVöD",
+      "TV-L",
+      "Behörde",
+      "Stadtverwaltung",
+      "Landkreis",
+      "Hochschule",
+      "Universität",
+      "im Auftrag unseres Kunden",
+      "Personalvermittlung",
+      "Zeitarbeit",
+      "Arbeitnehmerüberlassung",
+      "Konzern",
+      "weltweit"
+    ],
+    "sperrliste_firmen": "DAX, MDAX, SDAX; Liste folgt mit dem Workflow",
+    "warnsignal_rechtsform": [
+      "AG",
+      "SE",
+      "KGaA"
+    ],
+    "hinweis_sozial": "Soziale Träger, Pflege, Kita sind erlaubt. Raus nur bei Konzern/Großträger (>249 Mitarbeitende oder Verbundkonzern) oder öffentlicher Trägerschaft (Kommune, Land, Uniklinik, Körperschaft)."
+  },
+  "lead_definition": {
+    "pflicht": [
+      "Firma 10–249 Mitarbeitende, kein Ausschluss",
+      "Telefonnummer in der Anzeige"
+    ],
+    "optional": [
+      "Name des Ansprechpartners"
+    ],
+    "quelle": "Owner 2026-11-27"
+  }
+}

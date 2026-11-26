@@ -19,6 +19,10 @@ Die Quelltexte in `src/` sind n8n-Workflow-SDK-Code und die versionierte Fassung
 
 Die Cron-Zeiten begrenzen die Airtable-Aufrufe (Monatskontingent je Plan); die tatsächlichen Anrufzeiten steuert `Config.call_window_*` im Gate.
 
+## Konfiguration
+
+- `config/berufsfilter.json`: Suchbegriffe für den Lead-Pilot, Entwurf bis zur Owner-Freigabe ([ADR-0014](../../docs/adr/0014-lead-pilot-quellen-und-berufsfilter.md)).
+
 ## Credentials (vom Owner in n8n anzulegen)
 
 | Name in n8n | Typ | Wofür | Hinweis |

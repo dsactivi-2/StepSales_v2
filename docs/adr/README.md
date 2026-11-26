@@ -17,3 +17,4 @@ Format: [Vorlage](template.md). Neue ADR = nächste freie Nummer. Akzeptieren da
 | 0011 | [Anrufablauf, Dispatch-Vertrag und zwei Deployments](0011-anrufablauf-und-dispatch-vertrag.md) | Vorgeschlagen |
 | 0012 | [n8n-Workflows: Aufteilung, Idempotenz, fail-closed](0012-n8n-workflows-idempotenz-und-fail-closed.md) | Vorgeschlagen |
 | 0013 | [GPT-Live optional direkt über OpenAI (eigener Key)](0013-gptlive-direkt-ueber-openai.md) | Akzeptiert |
+| 0014 | [Lead-Pilot: Quellen und Berufsfilter](0014-lead-pilot-quellen-und-berufsfilter.md) | Vorgeschlagen |
