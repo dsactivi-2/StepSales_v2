@@ -99,6 +99,8 @@ Lead-Status aus `docs/agent-pack/05`: new → reached → qualified → proposal
 
 ## Offene Punkte
 
+000. **Neu aus #26 (Deploy Web-Test):** Der LiveKit-Plan erlaubt nur 1 Agent (`1/1`). Für A/B mit zwei gleichzeitig laufenden Agents Plan erhöhen, oder bis dahin ein Deployment zwischen den Varianten umschalten ([Runbook](runbooks/deploy.md)). Die Sprach-Simulation mit Gemini hat zwei Regelverstöße gezeigt: Die E-Mail wurde vor `send_followup` nicht bestätigt, und es gab keinen vereinbarten nächsten Schritt und keine Verabschiedung vor `end_call`. Das wird vor Stufe 4 im Prompt und/oder im Code abgesichert.
+
 00. **Neu aus Stufe 3:** n8n-Credentials anlegen (StepSales Airtable/Gmail/Google Calendar/Tools Secret/LiveKit) – n8n hat beim Anlegen Lina-Credentials zugewiesen, die vor der Aktivierung ersetzt werden müssen. `Config.livekit_api_key` und `mail_signatur` eintragen. Airtable-Plan prüfen (Monatskontingent API-Aufrufe). Feiertage als `Config.sperrtage`? Feld für `current_channels`?
 
 0. **Neu aus Stufe 2:** Mailbox – Nachricht hinterlassen oder auflegen (aktuell: auflegen, ADR-0011)? LiveKit-Projekt mit EU-Datenregion angelegt (nicht nachträglich änderbar)? Deploy-Region `eu-central`?

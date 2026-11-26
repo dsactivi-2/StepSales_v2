@@ -113,8 +113,9 @@ Alle Befehle im Ordner `agent/` (Python 3.12/3.13, [uv](https://docs.astral.sh/u
 | Verhaltenstests mit echtem Modell (kostet Inference) | `set -a; . ../.env; set +a; uv run pytest -m live` |
 | Lint / Format | `uv run ruff check src tests` · `uv run ruff format src tests` |
 | Agent-Worker lokal (registriert sich bei LiveKit Cloud) | `STEPSALES_VARIANT=gemini uv run python -m stepsales_agent.main dev` |
+| Deploy / Sprach-Simulation (LiveKit Cloud) | siehe [`docs/runbooks/deploy.md`](docs/runbooks/deploy.md) |
 
-- `console`-Modus geht nicht: der Agent braucht einen SIP-Teilnehmer (AMD). Lokal testen = Worker starten und per Dispatch mit Test-Metadaten anrufen lassen (Stufe 4, nur interne Nummern).
+- `console`-Modus geht nicht: der Agent braucht einen SIP-Teilnehmer (AMD). Ohne Telefon testen: `STEPSALES_WEB_TEST=true` (simulierte Tools, kein SIP) und Agent Console bzw. `lk agent simulate` ([Runbook](docs/runbooks/deploy.md)). Telefontests: Stufe 4, nur interne Nummern.
 - Live-Tests: Gemini läuft als echtes Modell im Textmodus; GPT-Live ist audio-only, getestet wird dort sein Backend-Modell (siehe `agent/tests/test_behavior_live.py`).
 - Deploy auf LiveKit Cloud: Stufe 4, erst nach „bestätige“.
 
