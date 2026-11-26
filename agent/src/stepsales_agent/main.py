@@ -82,13 +82,16 @@ async def _report_technical_outcome(
         logger.exception("could not report technical outcome")
 
 
+async def entrypoint(ctx: JobContext) -> None:
+    """Modulebene statt Closure: der Job-Prozess (forkserver) muss den Entrypoint per
+    Name importieren können; eine lokale Funktion ist nicht picklebar (Startfehler in
+    LiveKit Cloud). Settings kommen im Job-Prozess erneut aus der Umgebung."""
+    await _run_call(ctx, load_settings())
+
+
 def build_server(settings: Settings) -> AgentServer:
     server = AgentServer()
-
-    @server.rtc_session(agent_name=settings.agent_name)
-    async def entrypoint(ctx: JobContext) -> None:
-        await _run_call(ctx, settings)
-
+    server.rtc_session(agent_name=settings.agent_name)(entrypoint)
     return server
 
 
