@@ -73,7 +73,7 @@ Umsetzung: Textsignale und Zählung pro Firma auf den Apify-Daten (kostenlos). E
 
 Grenzen: Nur StepStone liefert die Firmengröße; bei den anderen wurden große Firmen per Regeln und Prüfung jedes Namens aussortiert. „Telefon“ ist jede Nummer im Anzeigentext, oft die Personalabteilung.
 
-**Quellen (Empfehlung, Freigabe offen):** stellenanzeigen.de als Hauptquelle, StepStone als Ergänzung. meinestadt und kimeta entfallen (kimeta: kein Apify-Actor). Damit ändert sich die Owner-Entscheidung F2.
+**Quellen (Owner-Freigabe 2026-11-27):** stellenanzeigen.de als Hauptquelle, StepStone als Ergänzung. meinestadt und kimeta entfallen (kimeta: kein Apify-Actor). Damit ändert sich die Owner-Entscheidung F2.
 
 **Volumen-Check:** Der Index sagt nichts über die Menge. Der erste Pilotlauf zählt je Suchbegriff die Treffer auf kimeta und meinestadt (kleine Obergrenze). Begriffe mit zu wenig Treffern fliegen raus. So entsteht die eigene Statistik aus den Pilotportalen.
 
