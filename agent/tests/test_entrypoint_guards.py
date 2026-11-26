@@ -54,7 +54,13 @@ async def test_missing_trunk_refused() -> None:
 
 @pytest.mark.parametrize(
     ("code", "expected"),
-    [("486", "no_answer"), ("603", "no_answer"), ("480", "no_answer"), ("500", "failed")],
+    [
+        ("486", "no_answer"),
+        ("603", "no_answer"),
+        ("480", "no_answer"),
+        ("408", "no_answer"),
+        ("500", "failed"),
+    ],
 )
 def test_busy_and_rejected_are_not_technical_failures(code: str, expected: str) -> None:
     from livekit import api

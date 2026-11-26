@@ -110,6 +110,7 @@ Alle Befehle im Ordner `agent/` (Python 3.12/3.13, [uv](https://docs.astral.sh/u
 | --- | --- |
 | Setup | `uv sync` |
 | Unit-Tests (ohne Netz, jeder Commit) | `uv run pytest` |
+| Einmalig für n8n-Code-Node-Tests (sonst übersprungen) | `cd ../n8n/workflows && npm ci --ignore-scripts` |
 | Verhaltenstests mit echtem Modell (kostet Inference) | `set -a; . ../.env; set +a; uv run pytest -m live` |
 | Lint / Format | `uv run ruff check src tests` · `uv run ruff format src tests` |
 | Agent-Worker lokal (registriert sich bei LiveKit Cloud) | `STEPSALES_VARIANT=gemini uv run python -m stepsales_agent.main dev` |
