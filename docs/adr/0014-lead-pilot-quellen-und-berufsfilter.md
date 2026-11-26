@@ -46,7 +46,7 @@ Stand 2026-11-13, kaufmännische Sektoren:
 | Marketing | 62,2 | 74,5 | 0,84 | −15,5 % |
 | Human Resources | 79,4 | 99,1 | 0,80 | −4,6 % |
 
-**Pilot-Filter (Beruf):** Buchhaltung, Büro/Assistenz, Controlling, Versicherungskaufleute. Suchbegriffe in [`n8n/workflows/config/berufsfilter.json`](../../n8n/workflows/config/berufsfilter.json). Recht (Legal) ist trotz Wert 1,06 komplett raus, Customer Service ebenfalls (stärkster Rückgang).
+**Pilot-Filter (Beruf):** Buchhaltung, Büro/Assistenz, Controlling, Versicherungskaufleute, Pflege und Soziales. Suchbegriffe in [`n8n/workflows/config/berufsfilter.json`](../../n8n/workflows/config/berufsfilter.json). Recht (Legal) ist trotz Wert 1,06 komplett raus, Customer Service ebenfalls (stärkster Rückgang).
 
 **Arbeitgeber-Filter (Owner, 2026-11-26):**
 
@@ -54,6 +54,7 @@ Stand 2026-11-13, kaufmännische Sektoren:
 - **Keine rechtsnahen Arbeitgeber:** Rechtsanwälte, Notare, Steuerberater, Wirtschaftsprüfer. Begründung Owner: Diese suchen gezielt nach Angriffspunkten für Abmahnungen; einen Rechtsstreit sparen wir uns, auch wenn die Begründung für den Anruf trägt.
 - **Keine Konzerne und Verbünde:** Banken, Sparkassen, Volks- und Raiffeisenbanken, Versicherungsgesellschaften, DAX/MDAX/SDAX. Sie haben Rahmenverträge und entscheiden nicht frei.
 - **Kein öffentlicher Dienst:** Vergaberecht, Ausschreibungspflicht.
+- **Soziales, Pflege, Kita bleiben drin** (Owner, 2026-11-26). Raus nur, wenn der Träger ein Konzern bzw. Großträger ist oder öffentlich (Kommune, Land, Uniklinik, Körperschaft). Indeed-Signal: Nursing 1,35, Childcare 1,06, Community & Social Service 1,02.
 - **Keine Personaldienstleister:** nicht der echte Arbeitgeber.
 - **Mehr als 9 Anzeigen einer Firma im Lauf:** raus (Konzern-Signal, Grenze ist eine Annahme).
 - **Rechtsform AG, SE, KGaA:** nur Warnsignal, kein Ausschluss.
