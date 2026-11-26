@@ -112,3 +112,22 @@ def test_opening_nudge_demands_ai_disclosure() -> None:
 
     text = OPENING_NUDGE.format(situation="x")
     assert "KI-Assistentin" in text and "Nichts ankündigen" in text
+
+
+def test_opening_without_job_title_still_discloses_ai() -> None:
+    ctx = parse_metadata(make_metadata(lead={"firma": "TEST Musterbau GmbH"}), room_name=ROOM)
+    text = voice_instructions(ctx, make_settings(), NOW)
+    assert "sage in einem kurzen Halbsatz, dass du eine KI-Assistentin bist" in text
+    assert "eine aktuelle Stellenanzeige der Firma" in text
+
+
+def test_callback_opening_names_rueckruf() -> None:
+    ctx = parse_metadata(make_metadata(call_type="rueckruf"), room_name=ROOM)
+    text = voice_instructions(ctx, make_settings(), NOW)
+    assert "Rückruf" in text
+    assert "KI-Assistentin" in text
+
+
+def test_backend_requires_topic_for_second_call() -> None:
+    text = backend_instructions(make_settings())
+    assert "topic immer angeben" in text

@@ -111,3 +111,21 @@ async def test_fake_tools_log_without_reserved_record_keys(caplog) -> None:
     ]:
         await client.call(tool, args)
     assert len(client.calls) == 5
+    assert "KeyError" not in caplog.text
+
+
+async def test_fake_unknown_tool_and_package_are_rejected() -> None:
+    client = FakeToolsClient(call_id=ROOM)
+    with pytest.raises(ToolRejected) as unknown:
+        await client.call("delete_lead", {})
+    assert unknown.value.code == "unknown_tool"
+    with pytest.raises(ToolRejected) as pkg:
+        await client.call("create_offer", {"package_id": "MULTI_M"})
+    assert pkg.value.code == "unknown_package"
+
+
+def test_web_test_true_is_case_insensitive(monkeypatch) -> None:
+    _clear(monkeypatch)
+    monkeypatch.setenv("STEPSALES_WEB_TEST", "TRUE")
+    assert load_settings().web_test is True
+    assert load_settings().tools_webhook_url == ""

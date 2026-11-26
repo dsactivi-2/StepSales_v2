@@ -129,6 +129,24 @@ async def test_malformed_response_is_not_success(n8n: FakeN8n) -> None:
     await client.aclose()
 
 
+async def test_ok_true_without_data_object_returns_empty_dict(n8n: FakeN8n) -> None:
+    n8n.responses = [(200, {"ok": True})]
+    client = _client(n8n)
+    data = await client.call("get_packages")
+    await client.aclose()
+    assert data == {}
+
+
+async def test_ok_false_without_error_object_uses_defaults(n8n: FakeN8n) -> None:
+    n8n.responses = [(200, {"ok": False})]
+    client = _client(n8n)
+    with pytest.raises(ToolRejected) as exc:
+        await client.call("create_offer", {"package_id": "MULTI_M"})
+    await client.aclose()
+    assert exc.value.code == "rejected"
+    assert "abgelehnt" in exc.value.message
+
+
 async def test_sequence_increments_per_call(n8n: FakeN8n) -> None:
     client = _client(n8n)
     await client.call("get_packages")

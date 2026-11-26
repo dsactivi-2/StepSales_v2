@@ -1,0 +1,8 @@
+{
+  "name": "stepsales-n8n-workflow-tests",
+  "private": true,
+  "description": "Nur Testdependenz für die Code-Nodes in src/ (luxon = n8n DateTime). Keine Runtime, keine Credentials.",
+  "devDependencies": {
+    "luxon": "^3.5.0"
+  }
+}
