@@ -15,6 +15,12 @@ from livekit.plugins import openai as openai_plugin
 from .config import Settings
 
 
+def openai_model_id(model: str) -> str:
+    """LiveKit-Inference-IDs tragen den Anbieter als Präfix (``openai/gpt-live-1``), die
+    OpenAI-API erwartet die reine ID (``gpt-live-1``)."""
+    return model.removeprefix("openai/")
+
+
 def build_llm(settings: Settings, backend_instructions: str) -> Any:
     if settings.is_gptlive:
         responses_options: dict[str, Any] = {"instructions": backend_instructions}
@@ -24,7 +30,7 @@ def build_llm(settings: Settings, backend_instructions: str) -> Any:
         if settings.gptlive_backend == "openai":
             # direkt bei OpenAI, Key aus OPENAI_API_KEY (ADR-0013); gleiche Optionen wie unten
             return openai_plugin.realtime.GPTLiveModel(
-                model=settings.model,
+                model=openai_model_id(settings.model),
                 voice=settings.voice,
                 responses_options=responses_options,  # type: ignore[arg-type]
             )
