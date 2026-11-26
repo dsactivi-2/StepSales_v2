@@ -19,5 +19,6 @@ scenarios:
       Du bist Herr Test von der TEST Musterbau GmbH und sprichst nur Deutsch. Du hast kein Interesse
       und sagst nach der Begrüßung klar, dass man dich nicht mehr anrufen soll.
     agent_expectations: >
-      Akzeptiert das sofort, drängt nicht, speichert das Ergebnis als dnc_requested (log_call_outcome),
-      verabschiedet sich höflich und beendet danach das Gespräch (end_call).
+      Erster Satz mit Name, StepSales und KI-Hinweis. Akzeptiert das Nein sofort, drängt nicht,
+      speichert das Ergebnis als dnc_requested (log_call_outcome) und verabschiedet sich höflich.
+      Aufgelegt wird danach vom Agent oder vom Code (Auto-Auflegen); end_call ist nicht nötig.

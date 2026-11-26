@@ -43,6 +43,14 @@ logger = logging.getLogger("stepsales")
 CALLEE_IDENTITY = "callee"
 WRAP_UP_GRACE_S = 90.0
 WEB_TEST_JOIN_TIMEOUT_S = 120.0
+# Anstoß, wenn der Agent zuerst sprechen muss. GPT-Live hat einen knappen Anstoß wie
+# „Eröffne das Gespräch“ als Aufgabe angekündigt („Einen Moment, ich starte kurz“) und dabei die
+# KI-Offenlegung ausgelassen (Simulation #28). Daher: genau sagen, was der erste Satz enthält.
+OPENING_NUDGE = (
+    "{situation} Sprich jetzt sofort deinen ersten Satz, wie unter Gesprächsbeginn beschrieben: "
+    "deinen Namen, StepSales, dass du eine KI-Assistentin bist, und die Frage, ob du mit der "
+    "richtigen Person sprichst. Nichts ankündigen, nichts delegieren, nicht warten."
+)
 
 
 def _sip_outcome(exc: api.SipCallError) -> str:
@@ -237,7 +245,9 @@ async def _run_call(ctx: JobContext, settings: Settings) -> None:
             return
         logger.info("web test participant joined")
         # im Browser gibt es kein "Hallo?" beim Abnehmen: Agent eröffnet sofort
-        session.generate_reply(instructions="Die Person ist verbunden. Eröffne das Gespräch.")
+        session.generate_reply(
+            instructions=OPENING_NUDGE.format(situation="Die Person ist verbunden.")
+        )
     else:
         if not await _dial_and_detect(ctx, settings, call, session, technical):
             return
@@ -309,7 +319,9 @@ async def _dial_and_detect(
     if result.category == AMDCategory.UNCERTAIN and result.reason == "no_speech_timeout":
         # Person schweigt nach Annahme -> Agent eröffnet
         session.generate_reply(
-            instructions="Die Person hat abgenommen, sagt aber nichts. Eröffne das Gespräch."
+            instructions=OPENING_NUDGE.format(
+                situation="Die Person hat abgenommen, sagt aber nichts."
+            )
         )
     return True
 

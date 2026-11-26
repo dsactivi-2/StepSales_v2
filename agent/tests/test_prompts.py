@@ -105,3 +105,10 @@ def test_dnc_requires_saving_before_goodbye(call_ctx) -> None:
 
     voice = voice_instructions(call_ctx, make_settings())
     assert "zwingend das Gesprächsergebnis „nicht mehr anrufen“ speichern" in voice
+
+
+def test_opening_nudge_demands_ai_disclosure() -> None:
+    from stepsales_agent.main import OPENING_NUDGE
+
+    text = OPENING_NUDGE.format(situation="x")
+    assert "KI-Assistentin" in text and "Nichts ankündigen" in text
