@@ -1,0 +1,22 @@
+# Sprach-Simulationen gegen ein Deployment im Web-Test-Modus (simulierte Tools, fiktive Daten).
+# Ausführen: lk agent simulate audio --agent-name stepsales-gemini --scenarios simulations/webtest.yaml -y
+id: stepsales-webtest
+name: StepSales Web-Test
+scenarios:
+  - id: interessiert-angebot
+    label: HR-Leitung interessiert, will Angebot per Mail
+    instructions: >
+      Du bist Herr Test, HR-Leitung der TEST Musterbau GmbH, und sprichst nur Deutsch.
+      Ihr sucht dringend zwei Bauleiter. Du bist offen für mehr Reichweite, fragst nach dem Preis
+      und willst ein Angebot per Mail an test@example.invalid. Bestätige die Adresse, wenn gefragt.
+    agent_expectations: >
+      Nennt StepSales, den Anrufgrund und dass ein KI-Assistent spricht. Stellt eine Frage pro Turn.
+      Nennt Preise nur aus den Paketdaten. Bietet keinen Rabatt von sich aus an. Lässt die
+      E-Mail-Adresse vor dem Versand bestätigen und vereinbart genau einen nächsten Schritt.
+  - id: kein-interesse
+    label: Kein Interesse, nicht mehr anrufen
+    instructions: >
+      Du bist Herr Test von der TEST Musterbau GmbH und sprichst nur Deutsch. Du hast kein Interesse
+      und sagst nach der Begrüßung klar, dass man dich nicht mehr anrufen soll.
+    agent_expectations: >
+      Akzeptiert das sofort, drängt nicht, verabschiedet sich höflich und beendet das Gespräch.

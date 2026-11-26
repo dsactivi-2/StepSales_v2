@@ -70,3 +70,17 @@ def test_busy_and_rejected_are_not_technical_failures(code: str, expected: str) 
     outcome, reason = _technical_from_sip(exc)
     assert outcome == expected
     assert code in reason
+
+
+def test_entrypoint_is_picklable_for_job_processes(monkeypatch) -> None:
+    """LiveKit startet Jobs per forkserver: der Entrypoint muss per Name importierbar sein."""
+    import pickle
+
+    from stepsales_agent.config import load_settings
+    from stepsales_agent.main import build_server
+
+    monkeypatch.setenv("STEPSALES_VARIANT", "gemini")
+    monkeypatch.setenv("STEPSALES_WEB_TEST", "true")
+    monkeypatch.delenv("LIVEKIT_SIP_OUTBOUND_TRUNK_ID", raising=False)
+    server = build_server(load_settings())
+    pickle.dumps(server._entrypoint_fnc)

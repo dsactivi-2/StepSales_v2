@@ -5,6 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionierung:
 ## [Unreleased]
 
 ### Added
+- Browser-Testmodus `STEPSALES_WEB_TEST` (#26): kein SIP, kein AMD, simulierte Tools mit fiktiven TEST-Daten, fail-closed gegenüber `LIVEKIT_SIP_OUTBOUND_TRUNK_ID`. Dockerfile für LiveKit Cloud, Runbook `deploy.md`, Sprach-Simulationen `agent/simulations/webtest.yaml`. `stepsales-gemini` in `eu-central` deployt (Web-Test).
 - n8n-Workflows auf `n8n.activi.io`, alle inaktiv (#15–#17): Agent-Tools-Webhook, Mail senden, Dispatcher mit Kill-Switch und A/B, Ergebnisabgleich, Follow-up-Sequenz FU1–3, Fehler-Stopp. Quelltexte `n8n/workflows/src/`, ADR-0012, Runbook `kill-switch.md`, Vertragsdetails und Fehlercodes. `schedule_second_call.topic` ist Pflicht (Agent + n8n).
 - Agent-Codebasis `agent/` (#11–#14): zwei Varianten (GPT-Live/Gemini) aus einem Code, deutscher Prompt (getrennt Voice/Backend für GPT-Live), 7 Tools gegen n8n-Webhook + EndCallTool, AMD vor dem Gespräch, technischer Ergebnis-Fallback, Zeitlimit, Test-Only-Sperre, Langfuse-Tracing; 50 Unit-Tests, 10 Live-Verhaltenstests.
 - Verträge `docs/contracts/` (Dispatch-Metadaten, Tools-Webhook), ADR-0011.
@@ -14,4 +15,5 @@ Format: [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionierung:
 - Init: Bauplan, Analyse, Stepsales Agent Pack.
 
 ### Fixed
+- Agent: Entrypoint auf Modulebene. Als Closure war er nicht picklebar, und jeder Job-Prozess scheiterte in LiveKit Cloud (#26).
 - Analyse: Gemini 3.8 Live hat über LiveKit Inference einen EU-Endpoint.
