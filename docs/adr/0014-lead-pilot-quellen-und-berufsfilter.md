@@ -61,6 +61,8 @@ Stand 2026-11-13, kaufmännische Sektoren:
 
 Umsetzung: Textsignale und Zählung pro Firma auf den Apify-Daten (kostenlos). Eine bezahlte Größenabfrage (North Data ab 500 €/Monat) erst, wenn im Pilot zu viele große Firmen durchrutschen. Inoffizielle North-Data-Scraper nutzen wir nicht.
 
+**Ergänzung Berufe (Owner, 2026-11-27):** Zusätzlich die KOFA-Engpassberufe Rang 1, 5, 6, 9, 10 (Jahresrückblick 2025): Bauelektrik, Kfz-Technik, Elektrische Betriebstechnik, Führung im Verkauf, Bauplanung. Grund: größte Fachkräftelücke, viele Anzeigen, lange Vakanz, überwiegend KMU. Kaufmännische Büroberufe sind laut KOFA kaum Engpass. Rang 2–4 (Alten-, Krankenpflege, Kita) waren schon enthalten.
+
 **Lead-Definition (Owner, 2026-11-27):** Pflicht sind Firma 10–249 Mitarbeitende ohne Ausschluss und eine Telefonnummer in der Anzeige. Der Name des Ansprechpartners ist wichtig, aber kein Ausschlussgrund.
 
 **Messung (26./27.11.2026, 680 Anzeigen, 6 Suchbegriffe, letzte 7 Tage; 95-%-Intervall):**
