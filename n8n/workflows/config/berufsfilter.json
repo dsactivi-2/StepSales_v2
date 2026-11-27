@@ -69,6 +69,63 @@
         "Erzieher"
       ],
       "hinweis": "Branche erlaubt (Owner 2026-11-26); ausgeschlossen nur Konzerne/Großträger und öffentliche Einrichtungen"
+    },
+    {
+      "kofa_beruf": "Bauelektrik (KOFA Rang 1)",
+      "fachkraefteluecke_2025": 16270,
+      "quelle": "KOFA Jahresrückblick 2025, Fachkräftelücke",
+      "suchbegriffe": [
+        "Elektriker",
+        "Elektroniker Energie- und Gebäudetechnik"
+      ],
+      "hinweis": "Owner 2026-11-27 aufgenommen; Lead-Quote mit Telefon noch nicht gemessen"
+    },
+    {
+      "kofa_beruf": "Kraftfahrzeugtechnik (KOFA Rang 5)",
+      "fachkraefteluecke_2025": 13327,
+      "quelle": "KOFA Jahresrückblick 2025, Fachkräftelücke",
+      "suchbegriffe": [
+        "Kfz-Mechatroniker"
+      ],
+      "hinweis": "Owner 2026-11-27 aufgenommen; Lead-Quote mit Telefon noch nicht gemessen"
+    },
+    {
+      "kofa_beruf": "Elektrische Betriebstechnik (KOFA Rang 6)",
+      "fachkraefteluecke_2025": 13011,
+      "quelle": "KOFA Jahresrückblick 2025, Fachkräftelücke",
+      "suchbegriffe": [
+        "Elektroniker Betriebstechnik"
+      ],
+      "hinweis": "Owner 2026-11-27 aufgenommen; Lead-Quote mit Telefon noch nicht gemessen"
+    },
+    {
+      "kofa_beruf": "Aufsicht und Führung Verkauf (KOFA Rang 9)",
+      "fachkraefteluecke_2025": 10166,
+      "quelle": "KOFA Jahresrückblick 2025, Fachkräftelücke",
+      "suchbegriffe": [
+        "Filialleiter",
+        "Verkaufsleiter"
+      ],
+      "hinweis": "Owner 2026-11-27 aufgenommen; Lead-Quote mit Telefon noch nicht gemessen"
+    },
+    {
+      "kofa_beruf": "Bauplanung und -überwachung (KOFA Rang 10)",
+      "fachkraefteluecke_2025": 6083,
+      "quelle": "KOFA Jahresrückblick 2025, Fachkräftelücke",
+      "suchbegriffe": [
+        "Bauleiter",
+        "Bauingenieur"
+      ],
+      "hinweis": "Owner 2026-11-27 aufgenommen; Lead-Quote mit Telefon noch nicht gemessen"
+    },
+    {
+      "kofa_beruf": "Sanitär-, Heizungs- und Klimatechnik (SHK)",
+      "vakanz_tage": 295,
+      "quelle": "BA-Vakanzzeiten Feb 2025–Jan 2026 (via Statista)",
+      "suchbegriffe": [
+        "Anlagenmechaniker SHK"
+      ],
+      "hinweis": "Owner 2026-11-27 aufgenommen; Lead-Quote mit Telefon noch nicht gemessen"
     }
   ],
   "ausschluss": {
