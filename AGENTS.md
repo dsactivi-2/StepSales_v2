@@ -47,6 +47,7 @@ Neue Top-Level-Ordner nur mit ADR oder Freigabe im Issue.
 
 - Gearbeitet wird in den Stufen aus `docs/PLAN.md`. Eine Stufe beginnt erst nach explizitem **„bestätige“** des Owners.
 - **Ohne Freigabe nie:** Deploy auf LiveKit Cloud, Aktivieren eines n8n-Workflows, echte Anrufe an externe Nummern, Stripe-Live-Modus, Schreiben in Produktions-Airtable, Löschen von Daten, Force-Push.
+- Technisch durchgesetzt für Claude Code über [`.claude/settings.json`](.claude/settings.json): `deny` sperrt `.env`-Lesen, Force-Push und `lk agent delete`; `ask` erzwingt eine Rückfrage vor `git push`, `lk agent create/deploy/update-secrets/rollback/simulate`, `lk dispatch` und schreibenden n8n-/Airtable-MCP-Tools. Gilt nicht in Cloud-Threads innerhalb eines claude.ai-Projekts – dort gilt nur dieser Text.
 - Unklare Anforderung, Ownership oder Erfolgskriterien → **fragen und warten**. Keine Geschäftsregeln, Preise, Paketinhalte, Rufnummern, Rechtsgrundlagen oder Umgebungswerte erfinden.
 
 ### Verifikation vor Aktion
@@ -111,7 +112,7 @@ Alle Befehle im Ordner `agent/` (Python 3.12/3.13, [uv](https://docs.astral.sh/u
 | Setup | `uv sync` |
 | Unit-Tests (ohne Netz, jeder Commit) | `uv run pytest` |
 | Einmalig für n8n-Code-Node-Tests (sonst übersprungen) | `cd ../n8n/workflows && npm ci --ignore-scripts` |
-| Verhaltenstests mit echtem Modell (kostet Inference) | `set -a; . ../.env; set +a; uv run pytest -m live` |
+| Verhaltenstests mit echtem Modell (kostet Inference) | `uv run --env-file ../.env pytest -m live` (Secrets nur für diesen Prozess, nicht in der Shell) |
 | Lint / Format | `uv run ruff check src tests` · `uv run ruff format src tests` |
 | Agent-Worker lokal (registriert sich bei LiveKit Cloud) | `STEPSALES_VARIANT=gemini uv run python -m stepsales_agent.main dev` |
 | Deploy / Sprach-Simulation (LiveKit Cloud) | siehe [`docs/runbooks/deploy.md`](docs/runbooks/deploy.md) |

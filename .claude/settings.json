@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./agent/.env)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --force-with-lease *)",
+      "Bash(lk agent delete *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(lk agent create *)",
+      "Bash(lk agent deploy *)",
+      "Bash(lk agent update-secrets *)",
+      "Bash(lk agent rollback *)",
+      "Bash(lk agent simulate *)",
+      "Bash(lk dispatch *)",
+      "mcp__n8n__publish_workflow",
+      "mcp__n8n__update_workflow",
+      "mcp__n8n__execute_workflow",
+      "mcp__Airtable__create_records_for_table",
+      "mcp__Airtable__update_records_for_table",
+      "mcp__Airtable__delete_records_for_table"
+    ]
+  }
+}
