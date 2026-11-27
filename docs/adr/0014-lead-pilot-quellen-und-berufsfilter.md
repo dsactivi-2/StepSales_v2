@@ -1,6 +1,6 @@
 # ADR-0014: Lead-Pilot – Quellen und Berufsfilter
 
-- **Status:** Vorgeschlagen (Owner-Entscheidungen F1–F3, Firmengröße und Ausschlüsse vom 2026-11-26 eingearbeitet; Suchbegriffe warten auf Freigabe)
+- **Status:** Vorgeschlagen (Owner-Entscheidungen F1–F3, Firmengröße und Ausschlüsse vom 2026-11-26 eingearbeitet; Suchbegriffe freigegeben 2026-11-27)
 - **Datum:** 2026-11-26
 - **Issue:** #36
 
