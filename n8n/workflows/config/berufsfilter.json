@@ -1,6 +1,6 @@
 {
-  "status": "entwurf",
-  "freigabe": null,
+  "status": "freigegeben",
+  "freigabe": "Owner 2026-11-27 (Suchbegriffe)",
   "stand_daten": "2026-11-13",
   "quelle": "Indeed Hiring Lab, job_postings_by_sector_DE.csv, CC BY 4.0",
   "adr": "docs/adr/0014-lead-pilot-quellen-und-berufsfilter.md",
